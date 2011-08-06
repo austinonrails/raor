@@ -52,8 +52,9 @@ Raor::Application.routes.draw do
   # just remember to delete public/index.html.
   # root :to => "welcome#index"
   resources :events do
-    resources :checkin
+    resources :checkins
   end
+  resources :checkins
   root :to => "events#index"
 
   # See how all your routes lay out with "rake routes"

@@ -12,9 +12,11 @@
 
 ActiveRecord::Schema.define(:version => 20110806082038) do
 
-  create_table "checkins", :id => false, :force => true do |t|
+  create_table "checkins", :force => true do |t|
     t.integer  "event_id"
     t.integer  "user_id"
+    t.boolean  "employment", :default => false
+    t.boolean  "employ",     :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -6,6 +6,16 @@ class EventsController < ApplicationController
     @events = Event.current
   end
 
+  def current
+    debugger
+    event = Event.current.first
+    if event
+      redirect_to event_path(event)
+    else
+      redirect_to events_path
+    end
+  end
+
   def show
     @event = Event.find(params[:id])
   end

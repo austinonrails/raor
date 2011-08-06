@@ -5,8 +5,9 @@
   <% if event.is_checked_in?(current_user) %>
     Checked In
   <% else %>
-    <%= link_to "Check In", event_checkin_index_path(event), :method => :post %>
+    <%= link_to "Check In", event_checkins_path(event), :method => :post %>
   <% end %>
 
+  <%= link_to "Show", event_path(event) if can? :read, event %>
   <%= link_to "Edit", edit_event_path(event) if can? :update, event %>
 </div>
