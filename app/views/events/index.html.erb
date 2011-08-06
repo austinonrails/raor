@@ -1,0 +1,5 @@
+<div class="events">
+  <%= render :partial => "event", :collection => @events %>
+
+  <%= link_to "New Event", new_event_path if can? :create, Event%>
+</div>

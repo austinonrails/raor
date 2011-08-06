@@ -1,0 +1,7 @@
+<h2>Edit Event "<%= @event.name %>"</h2>
+<%= form_for @event do |form| %>
+  <%= render :partial => "form", :locals => {:form => form} %>
+  <p>
+    <%= form.submit "Update Event" %>
+  </p>
+<% end %>

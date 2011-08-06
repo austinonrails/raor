@@ -33,6 +33,7 @@ GEM
     arel (2.0.10)
     bcrypt-ruby (2.1.4)
     builder (2.1.2)
+    cancan (1.6.5)
     columnize (0.3.4)
     devise (1.4.2)
       bcrypt-ruby (~> 2.1.2)
@@ -153,9 +154,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  cancan (= 1.6.5)
   devise (= 1.4.2)
-  devise-twitter
-  oa-oauth
+  devise-twitter (= 0.1.1)
+  oa-oauth (= 0.2.6)
   omniauth (= 0.2.6)
   rails (= 3.0.9)
   ruby-debug

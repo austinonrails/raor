@@ -1,0 +1,12 @@
+<div class="event">
+  <h2><%= event.name %></h2>
+  Starts at: <%= event.start_date %>
+  Ends at: <%= event.end_date %>
+  <% if event.is_checked_in?(current_user) %>
+    Checked In
+  <% else %>
+    <%= link_to "Check In", event_checkin_index_path(event), :method => :post %>
+  <% end %>
+
+  <%= link_to "Edit", edit_event_path(event) if can? :update, event %>
+</div>

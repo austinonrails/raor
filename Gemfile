@@ -9,8 +9,9 @@ gem 'rails', '3.0.9'
 gem 'sqlite3'
 gem 'devise', '1.4.2'
 gem 'omniauth', '0.2.6'
-gem "oa-oauth", :require => "omniauth/oauth"
-gem 'devise-twitter'
+gem "oa-oauth", '0.2.6', :require => "omniauth/oauth"
+gem 'devise-twitter', '0.1.1'
+gem 'cancan', '1.6.5'
 
 # Use unicorn as the web server
 # gem 'unicorn'
