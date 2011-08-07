@@ -6,12 +6,16 @@
   <% if @event.is_checked_in?(current_user) %>
     Checked In
   <% else %>
-    <%= link_to "Check In", event_checkin_path(@event), :method => :post %>
+    <%= link_to "Check In", event_checkins_path(@event), :method => :post %>
   <% end %>
 
   <%= link_to "Edit", edit_event_path(@event) if can? :update, @event %><br/>
   <%= link_to "Back", events_path %>
 
   <h3>Current checkins</h3>
-  <%= render :partial => "checkins/checkin", :collection => @event.checkins %>
+  <div class="event_checkins">
+    <ul id="checkins">
+      <%= render :partial => "checkins/checkin", :collection => @event.checkins %>
+    </ul>
+  </div>
 </div>

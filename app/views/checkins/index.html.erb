@@ -1,4 +1,6 @@
 <h2>Checkins for event "<%= @event.name %>"</h2>
-<div class="events">
-  <%= render :partial => "checkin", :collection => @checkins %>
+<div class="event_checkins">
+  <ul id="checkins">
+    <%= render :partial => "checkin", :collection => @checkins %>
+  </ul>
 </div>

@@ -1,0 +1,14 @@
+#checkins												  {/*padding:15px 25px 1px;*/padding:15px 0px 1px; width:700px; float:left;}
+#checkins p												{margin:0 0 15px; line-height:1.6;}
+
+#checkins div.summary p           {margin-bottom:0;}
+#checkins div.summary p.title     {text-align:left;}
+#checkins p.meta                  {font-size:11px; clear:left; padding-left:26px;}
+#checkins p.meta span             {margin-right:20px;}
+
+ul#checkins                       {margin:0 -24px; padding:0; border-top:1px solid #d9d9d9;}
+ul#checkins li                    {margin:0; padding:8px 24px; width:650px; float:left; list-style:none; border:1px solid #d9d9d9; border-top:none; background:url(images/fade_down.png) repeat-x bottom left;}
+
+span.title                        {font-size:15px; font-weight:bold; color:#333; display:block; float:left; padding-left:26px; background:url(images/status_unknown.png) no-repeat 0 2px;}
+span.employ                       {background-image:url(images/lf1m.png);}
+span.employment                   {background-image:url(images/lfw.png);}

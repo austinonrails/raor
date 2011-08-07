@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110806082038) do
+ActiveRecord::Schema.define(:version => 20110807194527) do
 
   create_table "checkins", :force => true do |t|
     t.integer  "event_id"
@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(:version => 20110806082038) do
     t.boolean  "employ",     :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "shoutout"
   end
 
   create_table "events", :force => true do |t|
