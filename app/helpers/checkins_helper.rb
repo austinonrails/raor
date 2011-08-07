@@ -1,5 +1,5 @@
 module CheckinsHelper
   def checkin_link event
-    link_to checkin_path(event)
+    button_to checkin_path(event)
   end
 end
