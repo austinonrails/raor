@@ -5,11 +5,25 @@ class CheckinsController < ApplicationController
   def index
     @event = Event.find(params[:event_id])
     @checkins = @event.checkins
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render :json => {:success => true, :checkins => @checkins.as_json(:include => [:user])}
+      end
+    end
   end
 
   def show
     @event = Event.find(params[:event_id])
     @checkin = @event.checkins.find_by_id(params[:id]) unless @event.blank?
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render :json => {:success => true, :checkin => @checkin}
+      end
+    end
   end
 
   def new

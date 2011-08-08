@@ -2,8 +2,13 @@
 <html>
 <head>
   <title>Raor</title>
-  <%= stylesheet_link_tag :all %>
-  <%= javascript_include_tag :defaults %>
+  <% if browser_is?("webkit") %>
+    <%= stylesheet_link_tag 'master', 'sencha-touch' %>
+    <%= javascript_include_tag Rails.env == "production" ? 'sencha-touch' : 'sencha-touch-debug', 'sencha-app' %>
+  <% else %>
+    <%= stylesheet_link_tag 'master' %>
+    <%= javascript_include_tag 'application' %>
+  <% end %>
   <%= csrf_meta_tag %>
 </head>
 <body>

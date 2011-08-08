@@ -3,16 +3,40 @@ class EventsController < ApplicationController
   before_filter :authenticate_user!
 
   def index
-    @events = Event.current
+    respond_to do |format|
+      format.html do
+        if browser_is?("webkit")
+          render :nothing => true, :layout => true
+        else
+          @events = Event.current
+          render :index
+        end
+      end
+
+      format.json do
+        events = Event.all
+        events.map{|event| event.current_user = current_user}
+        render :json => {:success => true, :events => events.as_json(:include => [:creator], :methods => :is_checked_in?)}
+      end
+    end
   end
 
   def current
-    debugger
     event = Event.current.first
-    if event
-      redirect_to event_path(event)
-    else
-      redirect_to events_path
+    respond_to do |format|
+      format.html do
+        if event
+          redirect_to event_path(event)
+        else
+          redirect_to events_path
+        end
+      end
+
+      format.json do
+        events = Event.all
+        events.map{|event| event.current_user = current_user}
+        render :json => {:success => true, :events => events.as_json(:include => [:creator], :methods => :is_checked_in?)}
+      end
     end
   end
 
@@ -25,6 +49,7 @@ class EventsController < ApplicationController
   end
 
   def create
+    params[:event][:creator_id] = current_user.id
     @event = Event.create(params[:event])
     if @event
       flash[:notice] = "Successfully created event #{@event.name}"
