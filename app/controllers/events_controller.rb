@@ -8,7 +8,7 @@ class EventsController < ApplicationController
         if browser_is?("webkit")
           render :nothing => true, :layout => true
         else
-          @events = Event.current
+          @events = Event.all
           render :index
         end
       end

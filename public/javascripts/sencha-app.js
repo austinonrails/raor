@@ -6,12 +6,30 @@ Ext.regModel('Checkin', {
   fields: ['created_at','employ','employment','event_id','id','shoutout','updated_at','user','user_id']
 });
 
+
+var backButton = new Ext.Button({
+  xtype: 'button',
+  text: 'Back',
+  hidden: true,
+  scope: this,
+  handler: function(btn) {
+    if(this.eventPanel.isVisible()) {
+      this.eventPanel.hide();
+      this.eventsList.show();
+      btn.hide();
+    } else if(this.checkinFormPanel.isVisible()) {
+      this.checkinFormPanel.hide();
+      this.eventPanel.show();
+    }
+  }
+});
+
 var toolbar = new Ext.Toolbar({
   dock: 'top',
   xtype: 'toolbar',
   ui: 'light',
   title: 'AOR Check-in',
-  items: []
+  items: [backButton]
 });
 
 var eventsStore = new Ext.data.Store({
@@ -40,6 +58,10 @@ var eventsStore = new Ext.data.Store({
   }
 });
 
+//var paging = new Ext.plugins.ListPagingPlugin({
+//  autoPaging: true
+//});
+
 var eventsList = new Ext.List({
   fullscreen:true,
   indexBar: true,
@@ -48,21 +70,24 @@ var eventsList = new Ext.List({
     scope: this,
     selectionchange: {
       fn: function(selectionModel, records) {
-        this.application.raor.removeAll(false);
-        this.eventsList.hide();
-        this.eventContainer.update(records[0].data);
-        proxy = this.checkinStore.getProxy();
-        proxy.url = "/events/" + records[0].data.id + "/checkins.json";
-        if(!records[0].data['is_checked_in?']) this.checkinButton.show();
-        this.checkinStore.load();
-        this.eventPanel.show();
-        this.eventPanel.doLayout();
-        this.application.raor.doLayout();
+        if(records.length > 0) {
+          this.backButton.show();
+          this.eventsList.hide();
+          this.eventContainer.update(records[0].data);
+          proxy = this.checkinStore.getProxy();
+          proxy.url = "/events/" + records[0].data.id + "/checkins.json";
+          if(!records[0].data['is_checked_in?']) this.checkinButton.show();
+          this.checkinStore.load();
+          this.eventPanel.show();
+          this.eventPanel.doLayout();
+          this.application.raor.doLayout();
+        }
       }
     }
   },
   loadingText: 'Loading Events...',
   monitorOrientation: true,
+  //plugins: [paging],
   scroll: {
     listeners: {
       scrollend: {
@@ -126,9 +151,54 @@ var checkinList = new Ext.List({
   store: checkinStore
 });
 
+var checkinFormPanel = new Ext.Panel({
+  hidden: true,
+  items: [{
+    xtype: 'checkboxfield',
+    label: 'Looking for Employment'
+  },{
+    xtype: 'checkboxfield',
+    label: 'Looking to Employ'
+  },{
+    xtype: 'textareafield',
+    label: 'Shout-out!'
+  },{
+    xtype: 'button',
+    text: 'Submit',
+    scope: this,
+    handler: function() {
+      Ext.Ajax.request({
+        url: '/events/10/checkins.json',
+        method: 'POST',
+        params: {
+          "checkin[employ]": this.checkinFormPanel.items.items[1].isChecked(),
+          "checkin[employment]": this.checkinFormPanel.items.items[0].isChecked(),
+          "checkin[shoutout]": this.checkinFormPanel.items.items[2].getValue()
+        },
+        scope: this,
+        success: function(result, request) {
+          this.checkinButton.hide();
+          this.checkinFormPanel.hide();
+          this.eventPanel.show();
+          this.eventsStore.load();
+        },
+        failure: function(result, request) {
+          Ext.MessageBox.alert("Failed","Failed to checkin due to error.");
+        }
+      });
+    }
+  }]
+});
+
 var checkinButton = new Ext.Button({
   text: 'Check-In',
-  hidden: true
+  hidden: true,
+  scope: this,
+  handler: function(btn) {
+    this.checkinFormPanel.show();
+    this.eventPanel.hide();
+    this.application.raor.doLayout();
+  }
 });
 
 var eventPanel = new Ext.Panel({
@@ -143,7 +213,7 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
   fullscreen: true,
 
   dockedItems: [toolbar],
-  items: [eventsList, eventPanel]
+  items: [eventsList, eventPanel, checkinFormPanel]
 });
 
 var application = new Ext.Application({
