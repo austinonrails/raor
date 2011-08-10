@@ -10,6 +10,7 @@ Ext.regModel('Checkin', {
 var backButton = new Ext.Button({
   xtype: 'button',
   text: 'Back',
+  hidden: true,
   scope: this,
   handler: function(btn) {
     this.application.raor.activatePrevCard();
@@ -63,7 +64,7 @@ var eventsList = new Ext.List({
           proxy.url = "/events/" + records[0].data.id + "/checkins.json";
           records[0].data['is_checked_in?'] ? this.checkinButton.hide() : this.checkinButton.show();
           this.checkinStore.load();
-          this.application.raor.setPrevCard();
+          this.backButton.show();
           this.application.raor.setActiveItem(this.eventPanel);
         }
       }
@@ -162,8 +163,7 @@ var checkinFormPanel = new Ext.Panel({
         scope: this,
         success: function(result, request) {
           this.checkinButton.hide();
-          this.application.raor.setPrevCard(this.eventsList);
-          this.application.raor.setActiveItem(this.eventPanel);
+          this.application.raor.setActiveItem(this.eventPanel, this.eventsList);
           this.checkinStore.load();
         },
         failure: function(result, request) {
@@ -179,7 +179,6 @@ var checkinButton = new Ext.Button({
   text: 'Check-In',
   scope: this,
   handler: function(btn) {
-    this.application.raor.setPrevCard();
     this.application.raor.setActiveItem(this.checkinFormPanel);
   }
 });
@@ -197,16 +196,25 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
 
   dockedItems: [toolbar],
   items: [eventsList, eventPanel, checkinFormPanel],
-  prevCard: undefined,
+  prevCard: [],
   activatePrevCard: function() {
-    if(this.prevCard != undefined) this.setActiveItem(this.prevCard);
+    if(this.prevCard.length > 0) {
+      var item = this.prevCard.pop()
+      if(item === eventsList) backButton.hide();
+      else backButton.show();
+      this.superclass().setActiveItem.call(this, item);
+    }
   },
   setPrevCard: function(card) {
     if(card == undefined) {
-      this.prevCard = this.getActiveItem();
+      this.prevCard.push(this.getActiveItem());
     } else {
-      this.prevCard = card;
+      this.prevCard.push(card);
     }
+  },
+  setActiveItem: function (item, prevItem) {
+    this.setPrevCard(prevItem == undefined ? this.getActiveItem() : prevItem);
+    this.superclass().setActiveItem.call(this, item);
   }
 });
 
