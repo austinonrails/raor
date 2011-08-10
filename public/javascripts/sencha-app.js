@@ -19,10 +19,25 @@ var backButton = new Ext.Button({
 
 var toolbar = new Ext.Toolbar({
   dock: 'top',
-  xtype: 'toolbar',
   ui: 'light',
   title: 'AOR Check-in',
   items: [backButton]
+});
+
+var adminToolbar = new Ext.Toolbar({
+  dock: 'bottom',
+  ui: 'light',
+  items: [{
+    xtype: 'spacer'
+  },{
+    xtype: 'button',
+    text: 'New Event'
+  },{
+    xtype: 'button',
+    text: 'Admin Users'
+  },{
+    xtype: 'spacer'
+  }]
 });
 
 var eventsStore = new Ext.data.Store({
@@ -188,9 +203,13 @@ var eventPanel = new Ext.Panel({
 });
 
 Ext.ux.Raor = Ext.extend(Ext.Panel, {
-//      constructor: function(config) {
-//        Ext.Panel.superclass.constructor.call(this, config);
-//      },
+  constructor: function(config) {
+    if(config == undefined) config = {};
+    if(window.ADMIN) {
+      Ext.apply(config, {dockedItems: [toolbar, adminToolbar]});
+    }
+    Ext.ux.Raor.superclass.constructor.call(this, config);
+  },
   fullscreen: true,
   layout: 'card',
 
