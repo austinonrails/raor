@@ -1,5 +1,5 @@
 class CheckinsController < ApplicationController
-  #load_and_authorize_resource
+  load_and_authorize_resource
   before_filter :authenticate_user!
 
   def index
@@ -9,7 +9,7 @@ class CheckinsController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        render :json => {:success => true, :checkins => @checkins.as_json(:include => [:user])}
+        render :json => {:success => true, :checkins => @checkins.as_json(:include => {:user => {:only => :name}})}
       end
     end
   end
@@ -21,7 +21,7 @@ class CheckinsController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        render :json => {:success => true, :checkin => @checkin}
+        render :json => {:success => true, :checkin => @checkin.as_json(:include => {:user => {:only => :name}})}
       end
     end
   end

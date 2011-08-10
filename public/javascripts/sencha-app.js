@@ -10,17 +10,9 @@ Ext.regModel('Checkin', {
 var backButton = new Ext.Button({
   xtype: 'button',
   text: 'Back',
-  hidden: true,
   scope: this,
   handler: function(btn) {
-    if(this.eventPanel.isVisible()) {
-      this.eventPanel.hide();
-      this.eventsList.show();
-      btn.hide();
-    } else if(this.checkinFormPanel.isVisible()) {
-      this.checkinFormPanel.hide();
-      this.eventPanel.show();
-    }
+    this.application.raor.activatePrevCard();
   }
 });
 
@@ -47,12 +39,7 @@ var eventsStore = new Ext.data.Store({
     scope: this,
     load: {
       fn: function(store, records, successful) {
-//          if(records.length > 0) {
-//            this.event_id = records[0].data.id;
-//            proxy = store.getProxy();
-//            proxy.url = "/events/" + this.event_id + "/checkins.json";
-//            store.load();
-//          }
+        this.eventsList.refresh();
       }
     }
   }
@@ -71,16 +58,13 @@ var eventsList = new Ext.List({
     selectionchange: {
       fn: function(selectionModel, records) {
         if(records.length > 0) {
-          this.backButton.show();
-          this.eventsList.hide();
           this.eventContainer.update(records[0].data);
           proxy = this.checkinStore.getProxy();
           proxy.url = "/events/" + records[0].data.id + "/checkins.json";
-          if(!records[0].data['is_checked_in?']) this.checkinButton.show();
+          records[0].data['is_checked_in?'] ? this.checkinButton.hide() : this.checkinButton.show();
           this.checkinStore.load();
-          this.eventPanel.show();
-          this.eventPanel.doLayout();
-          this.application.raor.doLayout();
+          this.application.raor.setPrevCard();
+          this.application.raor.setActiveItem(this.eventPanel);
         }
       }
     }
@@ -120,7 +104,8 @@ var checkinStore = new Ext.data.Store({
     scope: this,
     load: {
       fn: function(store, records, successful) {
-        this.application.raor.doLayout();
+        this.checkinList.refresh();
+        //this.application.raor.doLayout();
       }
     }
   }
@@ -152,7 +137,6 @@ var checkinList = new Ext.List({
 });
 
 var checkinFormPanel = new Ext.Panel({
-  hidden: true,
   items: [{
     xtype: 'checkboxfield',
     label: 'Looking for Employment'
@@ -178,9 +162,9 @@ var checkinFormPanel = new Ext.Panel({
         scope: this,
         success: function(result, request) {
           this.checkinButton.hide();
-          this.checkinFormPanel.hide();
-          this.eventPanel.show();
-          this.eventsStore.load();
+          this.application.raor.setPrevCard(this.eventsList);
+          this.application.raor.setActiveItem(this.eventPanel);
+          this.checkinStore.load();
         },
         failure: function(result, request) {
           Ext.MessageBox.alert("Failed","Failed to checkin due to error.");
@@ -191,18 +175,16 @@ var checkinFormPanel = new Ext.Panel({
 });
 
 var checkinButton = new Ext.Button({
-  text: 'Check-In',
   hidden: true,
+  text: 'Check-In',
   scope: this,
   handler: function(btn) {
-    this.checkinFormPanel.show();
-    this.eventPanel.hide();
-    this.application.raor.doLayout();
+    this.application.raor.setPrevCard();
+    this.application.raor.setActiveItem(this.checkinFormPanel);
   }
 });
 
 var eventPanel = new Ext.Panel({
-  hidden: true,
   items: [eventContainer, checkinButton, checkinList]
 });
 
@@ -211,9 +193,21 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
 //        Ext.Panel.superclass.constructor.call(this, config);
 //      },
   fullscreen: true,
+  layout: 'card',
 
   dockedItems: [toolbar],
-  items: [eventsList, eventPanel, checkinFormPanel]
+  items: [eventsList, eventPanel, checkinFormPanel],
+  prevCard: undefined,
+  activatePrevCard: function() {
+    if(this.prevCard != undefined) this.setActiveItem(this.prevCard);
+  },
+  setPrevCard: function(card) {
+    if(card == undefined) {
+      this.prevCard = this.getActiveItem();
+    } else {
+      this.prevCard = card;
+    }
+  }
 });
 
 var application = new Ext.Application({

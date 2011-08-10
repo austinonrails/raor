@@ -16,7 +16,7 @@ class EventsController < ApplicationController
       format.json do
         events = Event.all
         events.map{|event| event.current_user = current_user}
-        render :json => {:success => true, :events => events.as_json(:include => [:creator], :methods => :is_checked_in?)}
+        render :json => {:success => true, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?)}
       end
     end
   end
@@ -35,7 +35,7 @@ class EventsController < ApplicationController
       format.json do
         events = Event.all
         events.map{|event| event.current_user = current_user}
-        render :json => {:success => true, :events => events.as_json(:include => [:creator], :methods => :is_checked_in?)}
+        render :json => {:success => true, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?)}
       end
     end
   end
