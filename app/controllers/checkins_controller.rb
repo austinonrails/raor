@@ -37,7 +37,6 @@ class CheckinsController < ApplicationController
       format.html do
         if event && (checkin = event.checkin(current_user))
           flash[:notice] = "Successfully checked in to event #{event.name}"
-          debugger
           redirect_to edit_checkin_path(checkin)
         else
           flash[:error] = "Failed to check in to event #{event.name}"
