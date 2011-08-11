@@ -24,22 +24,6 @@ var toolbar = new Ext.Toolbar({
   items: [backButton]
 });
 
-var adminToolbar = new Ext.Toolbar({
-  dock: 'bottom',
-  ui: 'light',
-  items: [{
-    xtype: 'spacer'
-  },{
-    xtype: 'button',
-    text: 'New Event'
-  },{
-    xtype: 'button',
-    text: 'Admin Users'
-  },{
-    xtype: 'spacer'
-  }]
-});
-
 var eventsStore = new Ext.data.Store({
   model: 'Event',
   proxy: {
@@ -92,7 +76,7 @@ var eventsList = new Ext.List({
     listeners: {
       scrollend: {
         fn: function(scroller, offsets) {
-          
+
         }
       }
     }
@@ -152,41 +136,46 @@ var checkinList = new Ext.List({
   store: checkinStore
 });
 
-var checkinFormPanel = new Ext.Panel({
+var checkinFormPanel = new Ext.form.FormPanel({
+  url: '/events/10/checkins.json',
   items: [{
     xtype: 'checkboxfield',
-    label: 'Looking for Employment'
+    name: 'checkin[employment]',
+    label: 'Looking for Employment',
+    value: true
   },{
     xtype: 'checkboxfield',
-    label: 'Looking to Employ'
+    name: 'checkin[employ]',
+    label: 'Looking to Employ',
+    value: true
   },{
     xtype: 'textareafield',
+    name: 'checkin[shoutout]',
     label: 'Shout-out!'
   },{
     xtype: 'button',
+    ui: 'confirm',
     text: 'Submit',
     scope: this,
     handler: function() {
-      Ext.Ajax.request({
-        url: '/events/10/checkins.json',
-        method: 'POST',
-        params: {
-          "checkin[employ]": this.checkinFormPanel.items.items[1].isChecked(),
-          "checkin[employment]": this.checkinFormPanel.items.items[0].isChecked(),
-          "checkin[shoutout]": this.checkinFormPanel.items.items[2].getValue()
-        },
-        scope: this,
-        success: function(result, request) {
-          this.checkinButton.hide();
-          this.application.raor.setActiveItem(this.eventPanel, this.eventsList);
-          this.checkinStore.load();
-        },
-        failure: function(result, request) {
-          Ext.MessageBox.alert("Failed","Failed to checkin due to error.");
-        }
-      });
+      this.checkinFormPanel.submit({waitMsg: {message:'Checking In'}});
     }
-  }]
+  }],
+  listeners: {
+    scope: this,
+    submit: {
+      fn: function(form, result) {
+        this.checkinButton.hide();
+        this.application.raor.setActiveItem(this.eventPanel, this.eventsList);
+        this.checkinStore.load();
+      }
+    },
+    exception: {
+      fn: function(form, result) {
+        Ext.MessageBox.alert("Failed","Failed to checkin due to error.");
+      }
+    }
+  }  
 });
 
 var checkinButton = new Ext.Button({
@@ -200,45 +189,4 @@ var checkinButton = new Ext.Button({
 
 var eventPanel = new Ext.Panel({
   items: [eventContainer, checkinButton, checkinList]
-});
-
-Ext.ux.Raor = Ext.extend(Ext.Panel, {
-  constructor: function(config) {
-    if(config == undefined) config = {};
-    if(window.ADMIN) {
-      Ext.apply(config, {dockedItems: [toolbar, adminToolbar]});
-    }
-    Ext.ux.Raor.superclass.constructor.call(this, config);
-  },
-  fullscreen: true,
-  layout: 'card',
-
-  dockedItems: [toolbar],
-  items: [eventsList, eventPanel, checkinFormPanel],
-  prevCard: [],
-  activatePrevCard: function() {
-    if(this.prevCard.length > 0) {
-      var item = this.prevCard.pop()
-      if(item === eventsList) backButton.hide();
-      else backButton.show();
-      this.superclass().setActiveItem.call(this, item);
-    }
-  },
-  setPrevCard: function(card) {
-    if(card == undefined) {
-      this.prevCard.push(this.getActiveItem());
-    } else {
-      this.prevCard.push(card);
-    }
-  },
-  setActiveItem: function (item, prevItem) {
-    this.setPrevCard(prevItem == undefined ? this.getActiveItem() : prevItem);
-    this.superclass().setActiveItem.call(this, item);
-  }
-});
-
-var application = new Ext.Application({
-  launch: function() {
-    this.raor = new Ext.ux.Raor();
-  }
 });

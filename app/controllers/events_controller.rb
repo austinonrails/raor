@@ -1,41 +1,47 @@
 class EventsController < ApplicationController
-  load_and_authorize_resource  
+  load_and_authorize_resource :except => [:index, :current]  
   before_filter :authenticate_user!
 
   def index
-    respond_to do |format|
-      format.html do
-        if browser_is?("webkit")
-          render :nothing => true, :layout => true
-        else
-          @events = Event.all
-          render :index
+    # Must manually authorize due to setting current_user on events
+    if can?(:read, Event) && can?(:read, User)
+      respond_to do |format|
+        format.html do
+          if browser_is?("webkit")
+            render :nothing => true, :layout => true
+          else
+            @events = Event.all
+            render :index
+          end
         end
-      end
 
-      format.json do
-        events = Event.all
-        events.map{|event| event.current_user = current_user}
-        render :json => {:success => true, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?)}
+        format.json do
+          events = Event.all
+          events.map{|event| event.current_user = current_user}
+          render :json => {:success => true, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?)}
+        end
       end
     end
   end
 
   def current
-    event = Event.current.first
-    respond_to do |format|
-      format.html do
-        if event
-          redirect_to event_path(event)
-        else
-          redirect_to events_path
+     # Must manually authorize due to setting current_user on events
+    if can?(:read, Event) && can?(:read, User)
+      event = Event.current.first
+      respond_to do |format|
+        format.html do
+          if event
+            redirect_to event_path(event)
+          else
+            redirect_to events_path
+          end
         end
-      end
 
-      format.json do
-        events = Event.all
-        events.map{|event| event.current_user = current_user}
-        render :json => {:success => true, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?)}
+        format.json do
+          events = Event.all
+          events.map{|event| event.current_user = current_user}
+          render :json => {:success => true, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?)}
+        end
       end
     end
   end

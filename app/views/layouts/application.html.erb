@@ -4,7 +4,11 @@
   <title>Raor</title>
   <% if browser_is?("webkit") %>
     <%= stylesheet_link_tag 'master', 'sencha-touch' %>
-    <%= javascript_include_tag Rails.env == "production" ? 'sencha-touch' : 'sencha-touch-debug', 'sencha-app' %>
+    <% if can?(:create, :Event) || can?(:create, :User) %>
+      <%= javascript_include_tag Rails.env == "production" ? 'sencha-touch' : 'sencha-touch-debug', 'events', 'admin', 'raor' %>
+    <% else %>
+      <%= javascript_include_tag Rails.env == "production" ? 'sencha-touch' : 'sencha-touch-debug', 'events', 'raor' %>
+    <% end %>
   <% else %>
     <%= stylesheet_link_tag 'master' %>
     <%= javascript_include_tag 'application' %>
