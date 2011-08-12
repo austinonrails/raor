@@ -5,14 +5,14 @@ class UsersController < ApplicationController
   def index
     users = User.all
     users.each do |user|
-      user.accessible = [:id,:email,:reset_password_sent_at,:remember_created_at,:sign_in_count,:current_sign_in_at,:last_sign_in_at,:current_sign_in_ip,:last_sign_in_ip,:name,:created_at,:updated_at,:roles_mask]
+      user.accessible = [:id,:email,:reset_password_sent_at,:remember_created_at,:sign_in_count,:current_sign_in_at,:last_sign_in_at,:current_sign_in_ip,:last_sign_in_ip,:name,:created_at,:updated_at]
     end if can? :manage, User
 
     respond_to do |format|
       format.html
 
       format.json do
-        render :json => {:success => true, :users => users.as_json(:except => [:encrypted_password, :reset_password_token])}
+        render :json => {:success => true, :users => users.as_json(:except => [:encrypted_password, :reset_password_token], :methods => :roles)}
       end
     end
   end
@@ -24,7 +24,7 @@ class UsersController < ApplicationController
       format.html
 
       format.json do
-        render :json => {:success => true, :users => users.as_json(:except => [:encrypted_password, :reset_password_token])}
+        render :json => {:success => true, :users => users.as_json(:except => [:encrypted_password, :reset_password_token], :methods => :roles)}
       end
     end
   end
@@ -34,9 +34,12 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(params[:users][0]) if params[:users]
-    @user.accessible = [:id,:email,:reset_password_sent_at,:remember_created_at,:sign_in_count,:current_sign_in_at,:last_sign_in_at,:current_sign_in_ip,:last_sign_in_ip,:name,:created_at,:updated_at,:roles_mask] if can? :manage, User
-    @user.save
+    if params[:users] && params[:users][0]
+      @user = User.new(params[:users][0])
+      @user.roles = params[:users][0]['roles']
+      @user.accessible = [:id,:email,:reset_password_sent_at,:remember_created_at,:sign_in_count,:current_sign_in_at,:last_sign_in_at,:current_sign_in_ip,:last_sign_in_ip,:name,:created_at,:updated_at] if can? :manage, User
+      @user.save
+    end
 
     respond_to do |format|
       format.html do
@@ -51,7 +54,7 @@ class UsersController < ApplicationController
 
       format.json do
         if @user.save
-          render :json => {:success => true, :users => [@user].as_json(:except => [:encrypted_password, :reset_password_token])}
+          render :json => {:success => true, :users => [@user].as_json(:except => [:encrypted_password, :reset_password_token]), :methods => :roles}
         else
           render :json => {:success => false}
         end
@@ -66,14 +69,15 @@ class UsersController < ApplicationController
   def update
     params[:users][0]["password"] = nil if params[:users] && params[:users][0] && params[:users][0]["password"].blank?
     @user = User.find(params[:id])
-    @user.accessible = [:id,:email,:reset_password_sent_at,:remember_created_at,:sign_in_count,:current_sign_in_at,:last_sign_in_at,:current_sign_in_ip,:last_sign_in_ip,:name,:created_at,:updated_at,:roles_mask] if can? :manage, User
+    @user.roles = params[:users][0]['roles']
+    @user.accessible = [:id,:email,:reset_password_sent_at,:remember_created_at,:sign_in_count,:current_sign_in_at,:last_sign_in_at,:current_sign_in_ip,:last_sign_in_ip,:name,:created_at,:updated_at] if can? :manage, User
 
     respond_to do |format|
       format.html do
         if params[:user].blank?
           flash[:error] = "Error while trying to update user"
           redirect_to users_path
-        elsif @user.update_attributes(params[:user])
+        elsif @user.update_attributes(params[:user]) && @user.save
           flash[:notice] = "Successfully updated user #{@user.name}"
           redirect_to user_path(@user)
         else
@@ -89,7 +93,7 @@ class UsersController < ApplicationController
         elsif @user.update_attributes(params[:users][0]) && @user.save
           flash[:notice] = "Successfully updated user #{@user.name}"
 
-          render :json => {:success => true, :users => [@user].as_json(:except => [:encrypted_password, :reset_password_token])}
+          render :json => {:success => true, :users => [@user].as_json(:except => [:encrypted_password, :reset_password_token], :methods => :roles)}
         else
           flash[:error] = "Failed to update user #{@user.name}"
           render :json => {:success => false}

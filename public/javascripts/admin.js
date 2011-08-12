@@ -1,5 +1,5 @@
 Ext.regModel('User', {
-  fields: ['id','email','password','reset_password_sent_at','remember_created_at','sign_in_count','current_sign_in_at','last_sign_in_at','current_sign_in_ip','last_sign_in_ip','name','created_at','updated_at','roles_mask']
+  fields: ['id','email','password','reset_password_sent_at','remember_created_at','sign_in_count','current_sign_in_at','last_sign_in_at','current_sign_in_ip','last_sign_in_ip','name','created_at','updated_at','roles']
 });
 
 var adminToolbar = new Ext.Toolbar({
@@ -137,7 +137,11 @@ var newUserButton = new Ext.Button({
   handler: function(btn) {
     var user = Ext.ModelMgr.create({id: undefined}, 'User');
     this.userFormPanel.load(user);
+    this.roleStore.loadRoles(window.ROLES);
+
     this.application.raor.setActiveItem(this.userFormPanel);
+
+    this.roleList.selectRoles([]);
   }
 });
 
@@ -151,7 +155,9 @@ var usersList = new Ext.List({
         if(records.length > 0) {
           var user = Ext.ModelMgr.create(records[0].data, 'User');
           this.userFormPanel.load(user);
+          this.roleStore.loadRoles(window.ROLES);
           this.application.raor.setActiveItem(this.userFormPanel);
+          this.roleList.selectRoles(user.data.roles);
         }
       }
     }
@@ -177,6 +183,42 @@ var usersPanel = new Ext.Panel({
   items: [newUserButton, usersList]
 });
 
+Ext.regModel('Role', {
+  fields: ['role']
+});
+
+var roleStore = new Ext.data.Store({
+  model: 'Role',
+  loadRoles: function(roles) {
+    this.each(function(record) {
+      this.remove(record);
+    }, this);
+    Ext.each(roles, function(item, index, allItems) {
+      this.add(Ext.ModelMgr.create({role: item}, 'Role'))
+    }, this);
+    roleList.refresh();
+  }
+});
+
+var roleList = new Ext.List({
+  itemTpl: '{role}',
+  multiSelect: true,
+  simpleSelect: true,
+  store: roleStore,
+  selectRoles: function(roles) {
+    var sm = this.getSelectionModel();
+    roleStore.each(function(record) {
+      sm.deselect(record);
+    }, this);
+    var records = [];
+    Ext.each(roles, function(item, index, allItems) {
+      var record = roleStore.findRecord('role', item);
+      if(record) records.push(record);
+    }, this);
+    sm.select(records);
+  }
+});
+
 var userFormPanel = new Ext.form.FormPanel({
   url: '/admin_users.json',
   items: [{
@@ -184,7 +226,7 @@ var userFormPanel = new Ext.form.FormPanel({
     name: 'name',
     label: 'Name'
   },{
-    xtype: 'textfield',
+    xtype: 'emailfield',
     name: 'email',
     label: 'Email Address'
   },{
@@ -192,8 +234,18 @@ var userFormPanel = new Ext.form.FormPanel({
     name: 'password',
     label: 'Password'
   },{
-    xtype: 'hiddenfield',
-    name: 'roles_mask'
+    xtype: 'container',
+    cls: 'x-field x-field-text x-label-align-left',
+    items: [{
+      xtype: 'container',
+      cls: 'x-form-label',
+      style: 'width: 30%;',
+      html: '<span>Roles</span>'
+    },{
+      xtype: 'container',
+      cls: 'x-form-field-container',
+      items: [roleList]
+    }]
   },{
     xtype: 'button',
     ui: 'confirm',
@@ -201,17 +253,22 @@ var userFormPanel = new Ext.form.FormPanel({
     scope: this,
     handler: function() {
       var formRecord = this.userFormPanel.getRecord();
+      var roles = [];
+      Ext.each(this.roleList.getSelectedRecords(), function(record) {
+        roles.push(record.data.role);
+      });
+
       if(formRecord == undefined || formRecord.data.id == undefined) {
-        var newRecord = Ext.ModelMgr.create({}, 'User');
+        var newRecord = Ext.ModelMgr.create({roles: roles}, 'User');
         this.userFormPanel.updateRecord(newRecord);
         this.usersStore.add(newRecord);
       } else {
         var storeRecord = usersStore.getById(formRecord.data.id);
         this.userFormPanel.updateRecord(storeRecord);
+        storeRecord.data.roles = roles;
       }
       this.usersStore.sync();
       this.eventsStore.load();
-      //this.checkinStore.load();
       this.application.raor.clearPrevCard();
       this.application.raor.setActiveItem(this.usersPanel, this.eventsList);
     }

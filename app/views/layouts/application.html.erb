@@ -17,7 +17,8 @@
   <script language="Javascript">
     Ext.Ajax.extraParams = { authenticity_token: "<%= form_authenticity_token %>" };
     <% if can? :create, Event %>
-    window.ADMIN = true
+    window.ADMIN = true;
+    window.ROLES = ['<%= User::ROLES.join("','") %>'];
     <% end %>
   </script>
 </head>
