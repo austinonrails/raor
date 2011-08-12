@@ -5,7 +5,7 @@
   <% if browser_is?("webkit") %>
     <%= stylesheet_link_tag 'master', 'sencha-touch' %>
     <% if can?(:create, :Event) || can?(:create, :User) %>
-      <%= javascript_include_tag Rails.env == "production" ? 'sencha-touch' : 'sencha-touch-debug', 'events', 'admin', 'raor' %>
+      <%= javascript_include_tag Rails.env == "production" ? 'sencha-touch' : 'sencha-touch-debug', 'DateTimePicker', 'events', 'admin', 'raor' %>
     <% else %>
       <%= javascript_include_tag Rails.env == "production" ? 'sencha-touch' : 'sencha-touch-debug', 'events', 'raor' %>
     <% end %>

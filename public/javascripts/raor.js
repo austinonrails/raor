@@ -2,9 +2,10 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
   constructor: function(config) {
     if(config == undefined) config = {};
     if(window.ADMIN && adminToolbar != undefined) {
-      Ext.apply(config, {dockedItems: [toolbar, adminToolbar]});
-    } else {
-      Ext.apply(config, {dockedItems: [toolbar]});
+      Ext.apply(config, {
+        dockedItems: [toolbar, adminToolbar],
+        items: [eventsList, eventPanel, checkinFormPanel, newEventFormPanel, usersPanel, userFormPanel]
+      });
     }
     Ext.ux.Raor.superclass.constructor.call(this, config);
   },
@@ -32,6 +33,9 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
   setActiveItem: function (item, prevItem) {
     this.setPrevCard(prevItem == undefined ? this.getActiveItem() : prevItem);
     this.superclass().setActiveItem.call(this, item);
+  },
+  clearPrevCard: function() {
+    this.prevCard = []
   }
 });
 

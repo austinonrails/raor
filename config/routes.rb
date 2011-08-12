@@ -55,6 +55,7 @@ Raor::Application.routes.draw do
   resources :events, :shallow => true do
     resources :checkins
   end
+  resources :admin_users, :controller => "users"
   root :to => "events#index"
 
   # See how all your routes lay out with "rake routes"

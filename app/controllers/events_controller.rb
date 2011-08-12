@@ -57,12 +57,25 @@ class EventsController < ApplicationController
   def create
     params[:event][:creator_id] = current_user.id
     @event = Event.create(params[:event])
-    if @event
-      flash[:notice] = "Successfully created event #{@event.name}"
-      redirect_to event_path(@event)
-    else
-      flash[:error] = "Failed to create event #{@event.name}"
-      redirect_to new_event_path
+
+    respond_to do |format|
+      format.html do
+        if @event
+          flash[:notice] = "Successfully created event #{@event.name}"
+          redirect_to event_path(@event)
+        else
+          flash[:error] = "Failed to create event #{@event.name}"
+          redirect_to new_event_path
+        end
+      end
+
+      format.json do
+        if @event
+          render :json => {:success => true}
+        else
+          render :json => {:success => false}
+        end
+      end
     end
   end
 

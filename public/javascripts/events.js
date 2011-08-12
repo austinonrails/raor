@@ -86,7 +86,7 @@ var eventsList = new Ext.List({
 });
 
 var eventContainer = new Ext.Container({
-  tpl: '<h2>{name}</h2><p class="description">{description}</p><p>Created By: {creator.name}</p><p>Starts: {start_date}</p><p>Ends: {end_date}</p>'
+  tpl: '<h2>{name}</h2><p class="description">{description}</p><p>Created By: {creator.name}</p><p>Starts: {[new Date(values.start_date)]}</p><p>Ends: {[new Date(values.end_date)]}</p>'
 });
 
 var checkinStore = new Ext.data.Store({
@@ -105,7 +105,6 @@ var checkinStore = new Ext.data.Store({
     load: {
       fn: function(store, records, successful) {
         this.checkinList.refresh();
-        //this.application.raor.doLayout();
       }
     }
   }
@@ -137,7 +136,7 @@ var checkinList = new Ext.List({
 });
 
 var checkinFormPanel = new Ext.form.FormPanel({
-  url: '/events/10/checkins.json',
+  url: '/events/nil/checkins.json',
   items: [{
     xtype: 'checkboxfield',
     name: 'checkin[employment]',

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110807194527) do
+ActiveRecord::Schema.define(:version => 20110811193248) do
 
   create_table "checkins", :force => true do |t|
     t.integer  "event_id"
@@ -26,8 +26,8 @@ ActiveRecord::Schema.define(:version => 20110807194527) do
     t.string   "name"
     t.text     "description"
     t.integer  "creator_id"
-    t.date     "start_date"
-    t.date     "end_date"
+    t.datetime "start_date"
+    t.datetime "end_date"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
