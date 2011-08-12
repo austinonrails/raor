@@ -155,6 +155,7 @@ var usersList = new Ext.List({
         if(records.length > 0) {
           var user = Ext.ModelMgr.create(records[0].data, 'User');
           this.userFormPanel.load(user);
+          this.userFormPanel.updateInfo(user);
           this.roleStore.loadRoles(window.ROLES);
           this.application.raor.setActiveItem(this.userFormPanel);
           this.roleList.selectRoles(user.data.roles);
@@ -165,15 +166,6 @@ var usersList = new Ext.List({
   loadingText: 'Loading Users...',
   monitorOrientation: true,
   //plugins: [paging],
-  scroll: {
-    listeners: {
-      scrollend: {
-        fn: function(scroller, offsets) {
-
-        }
-      }
-    }
-  },
   singleSelect: true,
   store: usersStore
 });
@@ -272,6 +264,9 @@ var userFormPanel = new Ext.form.FormPanel({
       this.application.raor.clearPrevCard();
       this.application.raor.setActiveItem(this.usersPanel, this.eventsList);
     }
+  },{
+    xtype: 'container',
+    id: 'info'
   }],
   listeners: {
     scope: this,
@@ -286,5 +281,38 @@ var userFormPanel = new Ext.form.FormPanel({
         Ext.MessageBox.alert("Failed","Failed to checkin due to error.");
       }
     }
+  },
+  scroll: 'vertical',
+  updateInfo: function(user) {
+    var info = Ext.ComponentMgr.get('info');
+    var header = '<div class="x-field x-field-text x-label-align-left"><div class="x-form-label"><span>';
+    var middle = '</span></div><div class="x-form-field-container">';
+    var end = '</div></div>'
+    var html = '';
+    var fields = [
+      {field: 'reset_password_sent_at', label: 'Reset Password Sent At'},
+      {field: 'remember_created_at', label: 'Remember Created At'},
+      {field: 'sign_in_count', label: 'Sign In Count'},
+      {field: 'current_sign_in_at', label: 'Current Sign In At'},
+      {field: 'current_sign_in_ip', label: 'Current Sign In IP'},
+      {field: 'last_sign_in_ip', label: 'Last Sign In IP'},
+      {field: 'created_at', label: 'Created At'},
+      {field: 'updated_at', label: 'Updated At'}
+    ];
+    Ext.each(fields, function(item, index, allItems) {
+      html += header;
+      html += item['label']
+      html += middle;
+      var value = user.data[item['field']];
+      if(value != undefined) {
+        var date = new Date(value);
+        if(date != 'Invalid Date') {
+          value = date.toString();
+        }
+        html += value;
+      }
+      html += end;
+    });
+    info.html = html;
   }
 });
