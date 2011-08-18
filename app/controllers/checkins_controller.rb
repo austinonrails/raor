@@ -46,8 +46,9 @@ class CheckinsController < ApplicationController
 
       format.json do
         options = params[:checkin] || {}
-        options[:user_id] = current_user.id
-        if event && event.checkins.create(options)
+        options["user_id"] = current_user.id
+        
+        if event && event.checkins.create(options.symbolize_keys)
           render :json => {:success => true}
         else
           render :json => {:success => false}

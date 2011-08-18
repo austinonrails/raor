@@ -71,7 +71,7 @@ var newEventFormPanel = new Ext.form.FormPanel({
     },
     exception: {
       fn: function(form, result) {
-        Ext.MessageBox.alert("Failed","Failed to create new event.");
+        Ext.Msg.alert("Failed","Failed to create new event.");
       }
     }
   }
@@ -278,7 +278,7 @@ var userFormPanel = new Ext.form.FormPanel({
     },
     exception: {
       fn: function(form, result) {
-        Ext.MessageBox.alert("Failed","Failed to checkin due to error.");
+        Ext.Msg.alert("Failed","Failed to checkin due to error.");
       }
     }
   },

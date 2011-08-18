@@ -61,6 +61,7 @@ var eventsList = new Ext.List({
           this.eventContainer.update(records[0].data);
           proxy = this.checkinStore.getProxy();
           proxy.url = "/events/" + records[0].data.id + "/checkins.json";
+          this.checkinFormPanel.url = proxy.url;
           records[0].data['is_checked_in?'] ? this.checkinButton.hide() : this.checkinButton.show();
           this.checkinStore.load();
           this.backButton.show();
@@ -141,12 +142,32 @@ var checkinFormPanel = new Ext.form.FormPanel({
     xtype: 'checkboxfield',
     name: 'checkin[employment]',
     label: 'Looking for Employment',
-    value: true
+    value: true,
+    listeners: {
+      scope: this,
+      check: {
+        fn: function(checkbox) {
+          Ext.each(this.checkinFormPanel.query('checkboxfield').remove(checkbox), function(item, index, allItems) {
+            item.uncheck();
+          })
+        }
+      }
+    }
   },{
     xtype: 'checkboxfield',
     name: 'checkin[employ]',
     label: 'Looking to Employ',
-    value: true
+    value: true,
+    listeners: {
+      scope: this,
+      check: {
+        fn: function(checkbox) {
+          Ext.each(this.checkinFormPanel.query('checkboxfield').remove(checkbox), function(item, index, allItems) {
+            item.uncheck();
+          })
+        }
+      }
+    }
   },{
     xtype: 'textareafield',
     name: 'checkin[shoutout]',
@@ -165,13 +186,14 @@ var checkinFormPanel = new Ext.form.FormPanel({
     submit: {
       fn: function(form, result) {
         this.checkinButton.hide();
+        this.eventsStore.load();
         this.application.raor.setActiveItem(this.eventPanel, this.eventsList);
         this.checkinStore.load();
       }
     },
     exception: {
       fn: function(form, result) {
-        Ext.MessageBox.alert("Failed","Failed to checkin due to error.");
+        Ext.Msg.alert("Failed","Failed to checkin due to error.");
       }
     }
   }  
