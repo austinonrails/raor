@@ -149,6 +149,7 @@ GEM
     warden_oauth (0.1.1)
       oauth
       warden (>= 0.8.1)
+    will_paginate (3.0.0)
 
 PLATFORMS
   ruby
@@ -162,3 +163,4 @@ DEPENDENCIES
   rails (= 3.0.9)
   ruby-debug
   sqlite3
+  will_paginate (= 3.0.0)

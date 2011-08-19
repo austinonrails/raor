@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   before_filter :authenticate_user!
 
   def index
-    users = User.all
+    users = User.page(params[:page])
     users.each do |user|
       user.accessible = [:id,:email,:reset_password_sent_at,:remember_created_at,:sign_in_count,:current_sign_in_at,:last_sign_in_at,:current_sign_in_ip,:last_sign_in_ip,:name,:created_at,:updated_at]
     end if can? :manage, User
@@ -12,7 +12,7 @@ class UsersController < ApplicationController
       format.html
 
       format.json do
-        render :json => {:success => true, :users => users.as_json(:except => [:encrypted_password, :reset_password_token], :methods => :roles)}
+        render :json => {:success => true, :total => users.total_entries, :users => users.as_json(:except => [:encrypted_password, :reset_password_token], :methods => :roles)}
       end
     end
   end

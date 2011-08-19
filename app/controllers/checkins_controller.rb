@@ -4,12 +4,12 @@ class CheckinsController < ApplicationController
 
   def index
     @event = Event.find(params[:event_id])
-    @checkins = @event.checkins
+    @checkins = @event.checkins.page(params[:page])
 
     respond_to do |format|
       format.html
       format.json do
-        render :json => {:success => true, :checkins => @checkins.as_json(:include => {:user => {:only => :name}})}
+        render :json => {:success => true, :total => @checkins.total_entries, :checkins => @checkins.as_json(:include => {:user => {:only => :name}})}
       end
     end
   end

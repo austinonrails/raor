@@ -26,6 +26,7 @@ var toolbar = new Ext.Toolbar({
 
 var eventsStore = new Ext.data.Store({
   model: 'Event',
+  clearOnPageLoad: false,
   proxy: {
     type: 'ajax',
     url: '/events/current.json',
@@ -45,13 +46,10 @@ var eventsStore = new Ext.data.Store({
   }
 });
 
-//var paging = new Ext.plugins.ListPagingPlugin({
-//  autoPaging: true
-//});
-
 var eventsList = new Ext.List({
   fullscreen:true,
   indexBar: true,
+  emptyText: 'There are no active events.',
   itemTpl: '<h2>{name}</h2><p class="description">{description}</p>',
   listeners: {
     scope: this,
@@ -64,6 +62,7 @@ var eventsList = new Ext.List({
           this.checkinFormPanel.url = proxy.url;
           records[0].data['is_checked_in?'] ? this.checkinButton.hide() : this.checkinButton.show();
           this.checkinStore.load();
+          this.checkinStore.currentPage = 1;
           this.backButton.show();
           this.application.raor.setActiveItem(this.eventPanel);
         }
@@ -72,16 +71,12 @@ var eventsList = new Ext.List({
   },
   loadingText: 'Loading Events...',
   monitorOrientation: true,
-  //plugins: [paging],
-  scroll: {
-    listeners: {
-      scrollend: {
-        fn: function(scroller, offsets) {
-
-        }
-      }
-    }
-  },
+  plugins: [{
+    ptype: 'listpaging',
+    autoPaging: true
+  },{
+    ptype: 'pullrefresh'
+  }],
   singleSelect: true,
   store: eventsStore
 });
@@ -114,6 +109,7 @@ var checkinStore = new Ext.data.Store({
 var checkinList = new Ext.List({
   indexBar: true,
   itemTpl: '<div class="summary"><p class="title"><span class="title{[values.employment ? " employment" : ""]}{[values.employ ? " employ" : ""]}">{user.name}</span></p><br/><p class="meta"><span class="shoutout">{shoutout}</span></p></div>',
+  disableSelection: true,
   listeners: {
     scope: this,
     selectionchange: {
@@ -123,15 +119,12 @@ var checkinList = new Ext.List({
   },
   loadingText: 'Loading Checkins...',
   monitorOrientation: true,
-  scroll: {
-    listeners: {
-      scrollend: {
-        fn: function(scroller, offsets) {
-
-        }
-      }
-    }
-  },
+  plugins: [{
+    ptype: 'listpaging',
+    autoPaging: true
+  },{
+    ptype: 'pullrefresh'
+  }],
   singleSelect: true,
   store: checkinStore
 });
@@ -187,8 +180,10 @@ var checkinFormPanel = new Ext.form.FormPanel({
       fn: function(form, result) {
         this.checkinButton.hide();
         this.eventsStore.load();
+        this.eventsStore.currentPage = 1;
         this.application.raor.setActiveItem(this.eventPanel, this.eventsList);
         this.checkinStore.load();
+        this.checkinStore.currentPage = 1;
       }
     },
     exception: {

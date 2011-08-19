@@ -12,6 +12,7 @@ gem 'omniauth', '0.2.6'
 gem "oa-oauth", '0.2.6', :require => "omniauth/oauth"
 gem 'devise-twitter', '0.1.1'
 gem 'cancan', '1.6.5'
+gem 'will_paginate', '3.0.0'
 
 # Use unicorn as the web server
 # gem 'unicorn'

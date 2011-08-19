@@ -165,7 +165,12 @@ var usersList = new Ext.List({
   },
   loadingText: 'Loading Users...',
   monitorOrientation: true,
-  //plugins: [paging],
+  plugins: [{
+    ptype: 'listpaging',
+    autoPaging: true
+  },{
+    ptype: 'pullrefresh'
+  }],
   singleSelect: true,
   store: usersStore
 });
