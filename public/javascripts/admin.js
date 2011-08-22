@@ -255,7 +255,7 @@ var userFormPanel = new Ext.form.FormPanel({
         roles.push(record.data.role);
       });
 
-      if(formRecord == undefined || formRecord.data.id == undefined) {
+      if(formRecord == undefined || formRecord.data.id == undefined || formRecord.data.id == "") {
         var newRecord = Ext.ModelMgr.create({roles: roles}, 'User');
         this.userFormPanel.updateRecord(newRecord);
         this.usersStore.add(newRecord);
