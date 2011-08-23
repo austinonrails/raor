@@ -2,7 +2,11 @@
 # four configuration values can also be set straight in your models.
 
 file = File.join(Rails.root,'config','omniauth.yml')
-auth = YAML.load(IO.read(file)) if File.exists?(file)
+auth = if File.exists?(file)
+  YAML.load(IO.read(file))
+else
+  {:twitter => {:CONSUMER_KEY => ENV['TWITTER_KEY'], :CONSUMER_SECRET => ENV['TWITTER_SECRET']}}
+end
 
 Devise.setup do |config|
   # ==> Mailer Configuration
