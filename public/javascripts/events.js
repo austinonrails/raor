@@ -1,11 +1,16 @@
 Ext.regModel('Event', {
-  fields: ['created_at','creator','creator_id','description','end_date','id','is_checked_in?','name','start_date','updated_at']
+  fields: ['created_at','creator','creator_id','description','end_date','id','is_checked_in?','name','start_date','updated_at'],
+  isCheckinTime: function(record) {
+    start_date = new Date(record.data['start_date']);
+    end_date = new Date(record.data['end_date']);
+    current_date = new Date();
+    return current_date < end_date && current_date > start_date
+  }
 });
 
 Ext.regModel('Checkin', {
   fields: ['created_at','employ','employment','event_id','id','shoutout','updated_at','user','user_id']
 });
-
 
 var backButton = new Ext.Button({
   xtype: 'button',
@@ -40,7 +45,33 @@ var eventsStore = new Ext.data.Store({
     scope: this,
     load: {
       fn: function(store, records, successful) {
-        this.eventsList.refresh();
+        if(this.application.raor == undefined || (!this.application.raor.loaded && this.application.raor.current_event != undefined)) {
+          var current_event = undefined;
+          if(this.application.raor == undefined) {
+            var params = this.application.getUrlVars();
+            if(params["current_event"] != undefined) current_event = parseInt(params["current_event"]);
+          } else {
+            current_event = this.application.raor.current_event;
+          }
+          var index = store.findExact("id", current_event);
+          if(index == -1) {
+            store.nextPage();
+          } else {
+            this.eventsList.refresh();
+            this.eventContainer.update(records[index].data);
+            proxy = this.checkinStore.getProxy();
+            proxy.url = "/events/" + records[index].data.id + "/checkins.json";
+            this.checkinFormPanel.url = proxy.url;
+            (!records[index].data['is_checked_in?'] && records[index].isCheckinTime(records[index])) ? this.checkinButton.show() : this.checkinButton.hide();
+            this.checkinStore.load();
+            this.checkinStore.currentPage = 1;
+            this.backButton.show();
+            this.application.loaded = true;
+            if(this.application.raor != undefined) this.application.raor.setActiveItem(this.eventPanel);
+          }
+        } else {
+          this.eventsList.refresh();
+        }
       }
     }
   }
@@ -60,7 +91,7 @@ var eventsList = new Ext.List({
           proxy = this.checkinStore.getProxy();
           proxy.url = "/events/" + records[0].data.id + "/checkins.json";
           this.checkinFormPanel.url = proxy.url;
-          records[0].data['is_checked_in?'] ? this.checkinButton.hide() : this.checkinButton.show();
+          (!records[0].data['is_checked_in?'] && records[0].isCheckinTime(records[0])) ? this.checkinButton.show() : this.checkinButton.hide();
           this.checkinStore.load();
           this.checkinStore.currentPage = 1;
           this.backButton.show();

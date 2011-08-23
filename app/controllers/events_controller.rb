@@ -16,7 +16,7 @@ class EventsController < ApplicationController
         end
 
         format.json do
-          events = Event.all
+          events = Event.page(params[:page])
           events.map{|event| event.current_user = current_user}
           render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?)}
         end
@@ -48,6 +48,16 @@ class EventsController < ApplicationController
 
   def show
     @event = Event.find(params[:id])
+
+    respond_to do |format|
+      format.html do
+        if browser_is?("webkit")
+          redirect_to events_path(:current_event => @event)
+        else
+          render :index
+        end
+      end
+    end
   end
 
   def new

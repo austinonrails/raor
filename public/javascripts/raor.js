@@ -11,6 +11,7 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
   },
   fullscreen: true,
   layout: 'card',
+  loaded: false,
 
   dockedItems: [toolbar],
   items: [eventsList, eventPanel, checkinFormPanel],
@@ -36,11 +37,32 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
   },
   clearPrevCard: function() {
     this.prevCard = []
+  },
+  listeners: {
+    afterrender: {
+      fn: function() {
+        if(window.application.loaded) this.setActiveItem(window.eventPanel);
+      }
+    }
   }
 });
 
 var application = new Ext.Application({
+  current_event: undefined,
   launch: function() {
+    var params = this.getUrlVars();
+    if(params["current_event"] != undefined) this.current_event = parseInt(params["current_event"]);
     this.raor = new Ext.ux.Raor();
-  }
+  },
+  getUrlVars: function() {
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+      hash = hashes[i].split('=');
+      vars.push(hash[0]);
+      vars[hash[0]] = hash[1];
+    }
+    return vars;
+  }  
 });
