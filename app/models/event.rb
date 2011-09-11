@@ -4,7 +4,8 @@ class Event < ActiveRecord::Base
   belongs_to :creator, :class_name => "User"
 
   attr_accessor :current_user
-  attr_accessible :name, :description, :start_date, :end_date
+  attr_accessible :name, :description, :start_date, :end_date, :as => :default
+  attr_accessible :id, :name, :description, :start_date, :end_date, :creator_id, :created_at, :updated_at, :as => :admin
   scope :current, :conditions => "events.end_date >= (SELECT date('now'))", :order => "events.end_date ASC"
 
   def is_checked_in? user=nil

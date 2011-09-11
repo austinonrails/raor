@@ -1,13 +1,9 @@
 class ActiveRecord::Base
-  attr_accessible
-  attr_accessor :accessible
+  include ActiveModel::MassAssignmentSecurity
 
-  private
-  def mass_assignment_authorizer
-    if accessible == :all
-      self.class.protected_attributes
-    else
-      super + (accessible || [])
+  def assign_attributes(values, options = {})
+    sanitize_for_mass_assignment(values, options[:as] || :default).each do |k, v|
+      send("#{k}=", v)
     end
   end
-end 
+end

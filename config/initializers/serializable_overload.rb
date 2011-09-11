@@ -17,7 +17,7 @@ module Devise
               super(options)
             elsif self.class.blacklist_keys?
               except = Array(options[:except])
-              super(options.merge(:except => except + (self.class.blacklist_keys - self.send(:mass_assignment_authorizer).to_a)))
+              super(options.merge(:except => except + (self.class.blacklist_keys - self.send(:mass_assignment_authorizer, options[:as] || :default).to_a)))
             else
               super
             end
@@ -26,4 +26,4 @@ module Devise
       end
     end
   end
-end    
+end

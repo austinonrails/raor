@@ -16,8 +16,8 @@
   <%= f.password_field :password_confirmation %></p>
 
   <p><%= f.submit "Sign up" %></p>
-  <%= hidden_field_tag "provider", @provider %>
-  <%= hidden_field_tag "uid", @uid %>
+  <%= hidden_field_tag "user[user_tokens_attributes][0][provider]", @provider %>
+  <%= hidden_field_tag "user[user_tokens_attributes][0][uid]", @uid %>
 <% end %>
 
 <%= render :partial => "devise/shared/links" %>

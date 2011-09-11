@@ -1,24 +1,25 @@
 class EventsController < ApplicationController
-  load_and_authorize_resource :except => [:index, :current]  
-  before_filter :authenticate_user!
+  load_resource :event, :except => [:current]
+  authorize_resource :event, :except => [:index, :current]
+
+  respond_to :html, :json
 
   def index
     # Must manually authorize due to setting current_user on events
     if can?(:read, Event) && can?(:read, User)
-      respond_to do |format|
+      respond_with(@events) do |format|
         format.html do
           if browser_is?("webkit")
             render :nothing => true, :layout => true
           else
-            @events = Event.all
             render :index
           end
         end
 
         format.json do
-          events = Event.page(params[:page])
+          events = @events.page(params[:page])
           events.map{|event| event.current_user = current_user}
-          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?)}
+          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)}
         end
       end
     end
@@ -40,16 +41,14 @@ class EventsController < ApplicationController
         format.json do
           events = Event.page(params[:page])
           events.map{|event| event.current_user = current_user}
-          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?)}
+          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)}
         end
       end
     end
   end
 
   def show
-    @event = Event.find(params[:id])
-
-    respond_to do |format|
+    respond_with(@event) do |format|
       format.html do
         if browser_is?("webkit")
           redirect_to events_path(:current_event => @event)
@@ -57,20 +56,25 @@ class EventsController < ApplicationController
           render :index
         end
       end
+
+      format.json do
+        @event.current_user = current_user
+        render :json => {:success => true, :events => @event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)}
+      end
     end
   end
 
   def new
-    @event = Event.new
+    respond_with(@event)
   end
 
   def create
     params[:event][:creator_id] = current_user.id
-    @event = Event.create(params[:event])
+    @event.assign_attributes(params[:event], :as => as_what?)
 
-    respond_to do |format|
+    respond_with(@event) do |format|
       format.html do
-        if @event
+        if @event.save
           flash[:notice] = "Successfully created event #{@event.name}"
           redirect_to event_path(@event)
         else
@@ -80,7 +84,7 @@ class EventsController < ApplicationController
       end
 
       format.json do
-        if @event
+        if @event.save
           render :json => {:success => true}
         else
           render :json => {:success => false}
@@ -90,25 +94,25 @@ class EventsController < ApplicationController
   end
 
   def edit
-    @event = Event.find(params[:id])
+    respond_with(@event)
   end
 
   def update
-    @event = Event.find(params[:id])
-    if params[:event].blank?
-      flash[:error] = "Error while trying to update event"
-      redirect_to events_path
-    elsif @event.update_attributes(params[:event])
-      flash[:notice] = "Successfully updated event #{@event.name}"
-      redirect_to event_path(@event)
-    else
-      flash[:error] = "Failed to update event #{@event.name}"
-      redirect_to edit_event_path(@event)
+    respond_with(@event) do |format|
+      format.html do
+        if @event.update_attributes(params[:event])
+          flash[:notice] = "Successfully updated event #{@event.name}"
+          redirect_to event_path(@event)
+        else
+          flash[:error] = "Failed to update event #{@event.name}"
+          redirect_to edit_event_path(@event)
+        end
+      end
     end
   end
 
   def destroy
-    @event = Event.find(params[:id])
     @event.destroy unless @event.blank?
+    respond_with(@event)
   end
 end

@@ -4,4 +4,4 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-Raor::Application.config.secret_token = '9d10e2211757fc820c106b4dd7f8118246c93e8d1be41042d8dbf37e21c49b51b766831e0067f0a6e9672f108cf8b215a0e87b70447546f679b2aa600408a8af'
+Raor::Application.config.secret_token = '9e5e1915b7669d49362238def1847845fc8897aca408ff0dbfa258d059ed01399ffad2c3d3374380533c1584398c3b33bd3bdbfac9471781d12b3a9e32e0dfff'

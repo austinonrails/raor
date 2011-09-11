@@ -7,8 +7,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def create
     super
-    user = User.find_by_email(params["user"]["email"])
-    UserToken.create(:user => user, :uid => params["uid"], :provider => params["provider"])
+    User.find_by_email(params[:user][:email]) || User.create(params[:user])
   end
 
   def update
