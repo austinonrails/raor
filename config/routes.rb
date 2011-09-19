@@ -52,7 +52,7 @@ Raor::Application.routes.draw do
   # just remember to delete public/index.html.
   # root :to => "welcome#index"
   match 'events/current' => 'events#current'
-  resources :events, :shallow => true do
+  resources :events do
     resources :checkins
   end
   resources :admin_users, :controller => "users"

@@ -4,7 +4,7 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
     if(window.ADMIN && adminToolbar != undefined) {
       Ext.apply(config, {
         dockedItems: [toolbar, adminToolbar],
-        items: [eventsList, eventPanel, checkinFormPanel, newEventFormPanel, usersPanel, userFormPanel]
+        items: [eventsList, eventPanel, checkinFormPanel, adminEventsList, adminEventPanel, usersPanel, userFormPanel]
       });
     }
     Ext.ux.Raor.superclass.constructor.call(this, config);

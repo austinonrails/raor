@@ -41,7 +41,7 @@ class EventsController < ApplicationController
         format.json do
           events = Event.page(params[:page])
           events.map{|event| event.current_user = current_user}
-          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)}
+          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:methods => :is_checked_in?, :as => as_what?)}
         end
       end
     end
@@ -69,8 +69,10 @@ class EventsController < ApplicationController
   end
 
   def create
-    params[:event][:creator_id] = current_user.id
-    @event.assign_attributes(params[:event], :as => as_what?)
+    params[:events].first[:creator_id] = current_user.id
+    params[:events].first.delete(:id)
+    params[:events].first.delete(:creator_id)
+    @event.assign_attributes(params[:events].first, :as => as_what?)
 
     respond_with(@event) do |format|
       format.html do
@@ -85,7 +87,7 @@ class EventsController < ApplicationController
 
       format.json do
         if @event.save
-          render :json => {:success => true}
+          render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)]}
         else
           render :json => {:success => false}
         end
@@ -108,11 +110,26 @@ class EventsController < ApplicationController
           redirect_to edit_event_path(@event)
         end
       end
+
+      format.json do
+        if @event.update_attributes(params[:events].first)
+          render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)]}
+        else
+          render :json => {:succes => false, :events => []}
+        end
+      end
     end
   end
 
   def destroy
-    @event.destroy unless @event.blank?
-    respond_with(@event)
+    respond_with(@event)do |format|
+      format.json do
+        if can?(:manage, @event) && @event.destroy
+          render :json => {:success => true, :events => []}
+        else
+          render :json => {:success => false, :events => []}
+        end
+      end
+    end
   end
 end

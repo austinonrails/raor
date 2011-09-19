@@ -7,6 +7,7 @@ class Event < ActiveRecord::Base
   attr_accessible :name, :description, :start_date, :end_date, :as => :default
   attr_accessible :id, :name, :description, :start_date, :end_date, :creator_id, :created_at, :updated_at, :as => :admin
   scope :current, :conditions => "events.end_date >= (SELECT date('now'))", :order => "events.end_date ASC"
+  scope :active, :conditions => ["events.end_date > ? AND events.start_date <= ?", Time.now, Time.now]
 
   def is_checked_in? user=nil
     user ||= current_user

@@ -40,8 +40,9 @@ class CheckinsController < ApplicationController
         options = params[:checkin] || {}
         options["user_id"] = current_user.id
 
-        if @event.checkins.create(options.symbolize_keys, :as => as_what?)
-          render :json => {:success => true}
+        @checkin = @event.checkins.create(options.symbolize_keys, :as => as_what?)
+        if @checkin.valid?
+          render :json => {:success => true, :checkins => [@checkin.as_json(:include => {:user => {:only => "name"}}, :as => as_what?)]}
         else
           render :json => {:success => false}
         end
@@ -75,11 +76,26 @@ class CheckinsController < ApplicationController
           end
         end
       end
+
+      format.json do
+        if can?(:manage, @checkin) && @checkin.update_attributes(params[:checkin])
+          render :json => {:success => true, :checkins => [@checkin.as_json(:include => {:user => {:only => "name"}}, :as => as_what?)]}
+        else
+          render :json => {:success => false, :checkins => []}
+        end
+      end
     end
   end
 
   def destroy
-    @event.checkout(current_user) unless @event.blank?
-    respond_with(@checkin)
+    respond_with(@checkin) do |format|
+      format.json do
+        if can?(:manage, @checkin) && @checkin.destroy
+          render :json => {:success => true, :checkins => []}
+        else
+          render :json => {:success => false, :checkins => []}          
+        end
+      end
+    end
   end
 end
