@@ -5,6 +5,12 @@ class CheckinsController < ApplicationController
   respond_to :html, :json
 
   def index
+    case as_what?
+      when :admin
+      else
+        @checkins = Checkin.unhidden
+    end
+    
     respond_with(@checkins) do |format|
       format.json do
         render :json => {:success => true, :total => @checkins.page(params[:page]).total_entries, :checkins => @checkins.page(params[:page]).as_json(:include => {:user => {:only => :name}}, :as => as_what?)}
@@ -37,7 +43,7 @@ class CheckinsController < ApplicationController
       end
 
       format.json do
-        options = params[:checkin] || {}
+        options = params[:checkins].first || {}
         options["user_id"] = current_user.id
 
         @checkin = @event.checkins.create(options.symbolize_keys, :as => as_what?)
@@ -78,7 +84,7 @@ class CheckinsController < ApplicationController
       end
 
       format.json do
-        if can?(:manage, @checkin) && @checkin.update_attributes(params[:checkin])
+        if can?(:manage, @event) && @checkin.update_attributes(params[:checkins].first, :as => as_what?)
           render :json => {:success => true, :checkins => [@checkin.as_json(:include => {:user => {:only => "name"}}, :as => as_what?)]}
         else
           render :json => {:success => false, :checkins => []}
@@ -90,7 +96,7 @@ class CheckinsController < ApplicationController
   def destroy
     respond_with(@checkin) do |format|
       format.json do
-        if can?(:manage, @checkin) && @checkin.destroy
+        if @checkin.destroy
           render :json => {:success => true, :checkins => []}
         else
           render :json => {:success => false, :checkins => []}          

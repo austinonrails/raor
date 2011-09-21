@@ -1,7 +1,7 @@
 Ext.ux.Raor = Ext.extend(Ext.Panel, {
   constructor: function(config) {
     if(config == undefined) config = {};
-    if(window.ADMIN && adminToolbar != undefined) {
+    if(window.ADMIN && adminToolbar) {
       Ext.apply(config, {
         dockedItems: [toolbar, adminToolbar],
         items: [eventsList, eventPanel, checkinFormPanel, adminEventsList, adminEventPanel, usersPanel, userFormPanel]
@@ -42,6 +42,35 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
     afterrender: {
       fn: function() {
         if(window.application.loaded) this.setActiveItem(window.eventPanel);
+      }
+    },
+    afterlayout: {
+      fn: function(container) {
+        this.setCardHeight(this.getActiveItem());
+      }
+    },
+    cardSwitch: {
+      fn: function(container, newCard, oldCard, index, animated) {
+        this.setCardHeight(newCard)
+      }
+    }
+  },
+  setCardHeight: function(card) {
+    var body = Ext.get(Ext.DomQuery.select("body")[0]);
+    var height = toolbar.getHeight() + card.getHeight();
+    if(adminToolbar) height += adminToolbar.getHeight();
+    body.setHeight(height);
+
+    if(card.xtype != "list") {
+      var list_index = card.items.findIndex('xtype', 'list');
+      if(list_index && list_index >= 0) {
+        var height = card.getHeight();
+        card.items.each(function(item, index, length) {
+          if(index != list_index) {
+            height -= item.getHeight();
+          }
+        });
+        card.items.getAt(list_index).setHeight(height);
       }
     }
   }

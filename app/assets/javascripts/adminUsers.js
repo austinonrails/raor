@@ -128,7 +128,6 @@ var roleList = new Ext.List({
 });
 
 var userFormPanel = new Ext.form.FormPanel({
-  url: '/admin_users.json',
   items: [{
     xtype: 'textfield',
     name: 'name',

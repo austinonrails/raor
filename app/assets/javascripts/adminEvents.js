@@ -102,7 +102,7 @@ var adminEventsStore = new Ext.data.Store({
       fn: function(store) {
         if(store.getById == undefined || store.getById("") == undefined) {
           this.adminEventsList.refresh();
-          this.eventsStore.load();
+          if(this.application.raor) this.eventsStore.load();
         }
       }
     }
@@ -110,6 +110,7 @@ var adminEventsStore = new Ext.data.Store({
 });
 
 var adminEventsList = new Ext.List({
+  cls: 'list',
   fullscreen:true,
   indexBar: true,
   emptyText: 'There are no active events.',
@@ -139,6 +140,11 @@ var adminEventsList = new Ext.List({
             var index = adminEventsStore.findExact("id", parseInt(id));
             adminEventsStore.removeAt(index);
             adminEventsStore.sync();
+            adminEventFormPanel.clearForm();
+            eventContainer.update(Ext.ModelMgr.create({},'Event').data);
+            checkinFormPanel.clearForm();
+            eventsStore.load();
+            checkinStore.remove(checkinStore.getRange());
           }, {
             stopEvent: true
           });
@@ -189,9 +195,12 @@ var adminCheckinStore = new Ext.data.Store({
 });
 
 var adminCheckinList = new Ext.List({
+  cls: 'list',
   indexBar: true,
-  itemTpl: '<div class="summary" ref="{[values.id]}"><p class="title"><span class="title{[values.employment ? " employment" : ""]}{[values.employ ? " employ" : ""]}">{user.name}</span></p><br/><p class="meta"><span class="shoutout">{shoutout}</span></p><button class="hideCheckin">Hide</button><button class="deleteCheckin">Delete</button></div>',
+  itemTpl: '<div class="summary" ref="{[values.id]}"><p class="title"><span class="title{[values.employment ? " employment" : ""]}{[values.employ ? " employ" : ""]}">{user.name}</span></p>' +
+           '<br/><p class="meta"><span class="shoutout">{shoutout}</span></p><button class="hideCheckin{[values.hidden ? " hidden" : ""]}">{[values.hidden ? "Unhide" : "Hide"]}</button><button class="deleteCheckin">Delete</button></div>',
   disableSelection: true,
+  emptyText: 'There is no-one currently checked in.',
   listeners: {
     scope: this,
     selectionchange: {
@@ -205,7 +214,12 @@ var adminCheckinList = new Ext.List({
           var elem = Ext.get(item);
           elem.removeAllListeners();
           elem.addListener("click", function(evt, el, o) {
-            var id = Ext.get(Ext.get(el).findParent(".summary")).getAttribute('ref');
+            var element = Ext.get(el);
+            var id = Ext.get(element.findParent(".summary")).getAttribute('ref');
+            var record = adminCheckinStore.findRecord("id", parseInt(id));
+            record.set('hidden', !element.hasCls("hidden"));
+            adminCheckinStore.sync();
+            checkinStore.load();
           });
         });
 
@@ -218,6 +232,7 @@ var adminCheckinList = new Ext.List({
             var index = adminCheckinStore.findExact("id", parseInt(id));
             adminCheckinStore.removeAt(index);
             adminCheckinStore.sync();
+            checkinStore.load();
           });
         });
       }
@@ -235,6 +250,10 @@ var adminCheckinList = new Ext.List({
   store: adminCheckinStore
 });
 
-var adminEventPanel = new Ext.Panel({
+var adminEventPanel = new Ext.Container({
+  layout: {
+    type: 'vbox',
+    align: 'stretch'
+  },
   items: [adminEventFormPanel, adminCheckinList]
 });

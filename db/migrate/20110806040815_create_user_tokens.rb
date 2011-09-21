@@ -1,5 +1,5 @@
 class CreateUserTokens < ActiveRecord::Migration
-  def self.up
+  def change
     create_table :user_tokens do |t|
       t.integer :user_id
       t.string :provider
@@ -7,9 +7,5 @@ class CreateUserTokens < ActiveRecord::Migration
 
       t.timestamps
     end
-  end
-
-  def self.down
-    drop_table :user_tokens
   end
 end

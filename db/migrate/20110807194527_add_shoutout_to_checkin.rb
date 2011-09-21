@@ -1,9 +1,5 @@
 class AddShoutoutToCheckin < ActiveRecord::Migration
-  def self.up
+  def change
     add_column :checkins, :shoutout, :string
-  end
-
-  def self.down
-    remove_column :checkins, :shoutout
   end
 end

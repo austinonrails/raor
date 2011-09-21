@@ -19,9 +19,10 @@ Ext.regModel('Event', {
 Ext.regModel('Checkin', {
   fields: [
     {name: 'created_at', type: 'date'},
-    {name: 'employ', type: 'boolean'},
-    {name: 'employment', type: 'boolean'},
+    {name: 'employ', type: 'boolean', defaultValue: false},
+    {name: 'employment', type: 'boolean', defaultValue: false},
     {name: 'event_id', type: 'int'},
+    {name: 'hidden', type: 'boolean', defaultValue: false},
     {name: 'id', type: 'int'},
     {name: 'shoutout', type: 'string'},
     {name: 'updated_at', type: 'date'},
@@ -50,8 +51,9 @@ var eventsStore = new Ext.data.Store({
   model: 'Event',
   clearOnPageLoad: false,
   proxy: {
-    type: 'ajax',
-    url: '/events/current.json',
+    type: 'railsrest',
+    format: 'json',
+    url: '/events/current',
     reader: {
       type: 'json',
       root: 'events'
@@ -62,15 +64,15 @@ var eventsStore = new Ext.data.Store({
     scope: this,
     load: {
       fn: function(store, records, successful) {
-        if(this.application.raor == undefined || (!this.application.raor.loaded && this.application.raor.current_event != undefined)) {
+        if(this.application.raor == undefined || (!this.application.raor.loaded && this.application.raor.current_event)) {
           var current_event = undefined;
           if(this.application.raor == undefined) {
             var params = this.application.getUrlVars();
-            if(params["current_event"] != undefined) current_event = parseInt(params["current_event"]);
+            if(params["current_event"]) current_event = parseInt(params["current_event"]);
           } else {
             current_event = this.application.raor.current_event;
           }
-          if(current_event != undefined) {
+          if(current_event) {
             var index = store.findExact("id", current_event);
             if(index == -1) {
               store.nextPage();
@@ -81,6 +83,7 @@ var eventsStore = new Ext.data.Store({
               proxy.url = "/events/" + records[index].data.id + "/checkins.json";
               this.checkinFormPanel.url = proxy.url;
               (!records[index].data['is_checked_in?'] && records[index].isCheckinTime(records[index])) ? this.checkinButton.show() : this.checkinButton.hide();
+              this.eventPanel.doLayout();
               this.checkinStore.load();
               this.checkinStore.currentPage = 1;
               this.backButton.show();
@@ -97,6 +100,7 @@ var eventsStore = new Ext.data.Store({
 });
 
 var eventsList = new Ext.List({
+  cls: 'list',
   fullscreen:true,
   indexBar: true,
   emptyText: 'There are no active events.',
@@ -108,9 +112,10 @@ var eventsList = new Ext.List({
         if(records.length > 0) {
           this.eventContainer.update(records[0].data);
           proxy = this.checkinStore.getProxy();
-          proxy.url = "/events/" + records[0].data.id + "/checkins.json";
+          proxy.url = "/events/" + records[0].data.id + "/checkins";
           this.checkinFormPanel.url = proxy.url;
           (!records[0].data['is_checked_in?'] && records[0].isCheckinTime(records[0])) ? this.checkinButton.show() : this.checkinButton.hide();
+          this.eventPanel.doLayout();
           this.checkinStore.load();
           this.checkinStore.currentPage = 1;
           this.backButton.show();
@@ -138,9 +143,15 @@ var eventContainer = new Ext.Container({
 var checkinStore = new Ext.data.Store({
   model: 'Checkin',
   proxy: {
-    type: 'ajax',
-    url: '/checkins.json',
+    model: 'Checkin',
+    type: 'railsrest',
+    format: 'json',
+    url: '/checkins',
     reader: {
+      type: 'json',
+      root: 'checkins'
+    },
+    writer: {
       type: 'json',
       root: 'checkins'
     }
@@ -157,9 +168,11 @@ var checkinStore = new Ext.data.Store({
 });
 
 var checkinList = new Ext.List({
+  cls: 'list',
+  disableSelection: true,
+  emptyText: 'There is no-one currently checked in.',
   indexBar: true,
   itemTpl: '<div class="summary"><p class="title"><span class="title{[values.employment ? " employment" : ""]}{[values.employ ? " employ" : ""]}">{user.name}</span></p><br/><p class="meta"><span class="shoutout">{shoutout}</span></p></div>',
-  disableSelection: true,
   listeners: {
     scope: this,
     selectionchange: {
@@ -183,7 +196,7 @@ var checkinFormPanel = new Ext.form.FormPanel({
   url: '/events/nil/checkins.json',
   items: [{
     xtype: 'checkboxfield',
-    name: 'checkin[employment]',
+    name: 'employment',
     label: 'Looking for Employment',
     value: true,
     listeners: {
@@ -198,7 +211,7 @@ var checkinFormPanel = new Ext.form.FormPanel({
     }
   },{
     xtype: 'checkboxfield',
-    name: 'checkin[employ]',
+    name: 'employ',
     label: 'Looking to Employ',
     value: true,
     listeners: {
@@ -213,7 +226,7 @@ var checkinFormPanel = new Ext.form.FormPanel({
     }
   },{
     xtype: 'textareafield',
-    name: 'checkin[shoutout]',
+    name: 'shoutout',
     label: 'Shout-out!'
   },{
     xtype: 'button',
@@ -221,7 +234,17 @@ var checkinFormPanel = new Ext.form.FormPanel({
     text: 'Submit',
     scope: this,
     handler: function() {
-      this.checkinFormPanel.submit({waitMsg: {message:'Checking In'}});
+      var checkin = Ext.ModelMgr.create({}, 'Checkin');
+      if(this.checkinFormPanel.record.data.id == "") {
+        this.checkinFormPanel.updateRecord(checkin);
+        this.checkinStore.add(checkin.data);
+      } else {
+        var record = this.checkinStore.findRecord("id", this.checkinFormPanel.record.data.id);
+        this.checkinFormPanel.updateRecord(record);
+      }
+      this.checkinStore.sync();
+      this.checkinButton.hide();
+      this.application.raor.activatePrevCard();
     }
   }],
   listeners: {
@@ -241,7 +264,11 @@ var checkinFormPanel = new Ext.form.FormPanel({
         Ext.Msg.alert("Failed","Failed to checkin due to error.");
       }
     }
-  }  
+  },
+  clearForm: function() {
+    var checkin = Ext.ModelMgr.create({}, 'Checkin');
+    this.load(checkin);
+  }
 });
 
 var checkinButton = new Ext.Button({
@@ -249,10 +276,11 @@ var checkinButton = new Ext.Button({
   text: 'Check-In',
   scope: this,
   handler: function(btn) {
+    this.checkinFormPanel.clearForm();
     this.application.raor.setActiveItem(this.checkinFormPanel);
   }
 });
 
-var eventPanel = new Ext.Panel({
+var eventPanel = new Ext.Container({
   items: [eventContainer, checkinButton, checkinList]
 });

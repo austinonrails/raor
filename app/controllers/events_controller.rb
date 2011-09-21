@@ -41,7 +41,7 @@ class EventsController < ApplicationController
         format.json do
           events = Event.page(params[:page])
           events.map{|event| event.current_user = current_user}
-          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:methods => :is_checked_in?, :as => as_what?)}
+          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)}
         end
       end
     end
@@ -69,9 +69,8 @@ class EventsController < ApplicationController
   end
 
   def create
-    params[:events].first[:creator_id] = current_user.id
+    params[:events].first["creator_id"] = current_user.id.to_s
     params[:events].first.delete(:id)
-    params[:events].first.delete(:creator_id)
     @event.assign_attributes(params[:events].first, :as => as_what?)
 
     respond_with(@event) do |format|
@@ -112,7 +111,7 @@ class EventsController < ApplicationController
       end
 
       format.json do
-        if @event.update_attributes(params[:events].first)
+        if can?(:manage, @event) && @event.update_attributes(params[:events].first)
           render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)]}
         else
           render :json => {:succes => false, :events => []}
