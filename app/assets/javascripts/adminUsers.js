@@ -61,6 +61,7 @@ var newUserButton = new Ext.Button({
 });
 
 var usersList = new Ext.List({
+  cls: 'list',
   indexBar: true,
   itemTpl: '<h2>{name}</h2><p class="email">{email}</p>',
   listeners: {

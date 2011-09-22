@@ -56,10 +56,10 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
     }
   },
   setCardHeight: function(card) {
-    var body = Ext.get(Ext.DomQuery.select("body")[0]);
-    var height = toolbar.getHeight() + card.getHeight();
-    if(adminToolbar) height += adminToolbar.getHeight();
-    body.setHeight(height);
+//    var body = Ext.get(Ext.DomQuery.select("body")[0]);
+//    var height = toolbar.getHeight() + card.getHeight();
+//    if(adminToolbar) height += adminToolbar.getHeight();
+//    body.setHeight(height);
 
     if(card.xtype != "list") {
       var list_index = card.items.findIndex('xtype', 'list');
@@ -95,3 +95,36 @@ var application = new Ext.Application({
     return vars;
   }  
 });
+
+function MilitaryTo12Hour(date) {
+	function showTheHours(theHour) {
+		return (theHour > 0 && theHour < 13) ? theHour : (theHour == 0 ? 12 : theHour-12);
+	}
+
+	function showZeroFilled(inValue) {
+		return (inValue > 9) ? ":" + inValue : ":0" + inValue;
+	}
+
+	function showAmPm(date) {
+		return date.getHours() < 12 ? " AM" : " PM";
+	}
+
+  return showTheHours(date.getHours()) + showZeroFilled(date.getMinutes()) + showZeroFilled(date.getSeconds()) + showAmPm(date);
+}
+
+function TimeRemaining(date) {
+  var current_date = new Date();
+  var time_left = date.getTime() - current_date.getTime();
+  if(time_left <= 0) {
+    return "<b>Already passed</b>";
+  }
+  var second = 1000;
+  var minute = second * 60;
+  var hour = minute * 60;
+  var day = hour * 24;
+  var days = Math.floor(time_left / day);
+  var hours = Math.floor(time_left % day / hour);
+  var minutes = Math.floor(time_left % day % hour / minute)
+  var seconds = Math.floor(time_left % day % hour % minute / second);
+  return days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds";
+}

@@ -37,7 +37,8 @@ var backButton = new Ext.Button({
   scope: this,
   handler: function(btn) {
     this.application.raor.activatePrevCard();
-  }
+  },
+  ui: 'back'
 });
 
 var toolbar = new Ext.Toolbar({
@@ -78,6 +79,7 @@ var eventsStore = new Ext.data.Store({
               store.nextPage();
             } else {
               this.eventsList.refresh();
+              this.eventContainer.record = records[index];
               this.eventContainer.update(records[index].data);
               proxy = this.checkinStore.getProxy();
               proxy.url = "/events/" + records[index].data.id + "/checkins.json";
@@ -110,6 +112,7 @@ var eventsList = new Ext.List({
     selectionchange: {
       fn: function(selectionModel, records) {
         if(records.length > 0) {
+          this.eventContainer.record = records[0];
           this.eventContainer.update(records[0].data);
           proxy = this.checkinStore.getProxy();
           proxy.url = "/events/" + records[0].data.id + "/checkins";
@@ -137,10 +140,69 @@ var eventsList = new Ext.List({
 });
 
 var eventContainer = new Ext.Container({
-  tpl: '<h2>{name}</h2><p class="description">{description}</p><p>Created By: {creator.name}</p><p>Starts: {[new Date(values.start_date)]}</p><p>Ends: {[new Date(values.end_date)]}</p>'
+  interval: undefined,
+  record: undefined,
+  tpl: '<h2>{name}</h2><p class="description">{description}</p><p>Created By: {creator.name}</p>' +
+       '<p>Start Date: {[new Date(values.start_date).toLocaleDateString()]}</p>' +
+       '<p>Start Time: {[MilitaryTo12Hour(new Date(values.start_date))]}</p>' +
+       '<p>Time Until: {[TimeRemaining(new Date(values.start_date))]}</p>' +
+       '<p>End Date: {[new Date(values.end_date).toLocaleDateString()]}</p>' +
+       '<p>End Time: {[MilitaryTo12Hour(new Date(values.end_date))]}</p>',
+  listeners: {
+    scope: this,
+    render: {
+      fn: function() {
+        if(this.interval) clearInterval();
+        this.eventContainer.interval = setInterval("this.eventContainer.update(this.eventContainer.record.data)", 1000)
+      }
+    }
+  }
+});
+
+var filterControls = new Ext.SegmentedButton({
+  allowDepress: true,
+  centered: true,
+  items: [{
+    xtype: 'spacer'
+  },{
+    text: 'LFW',
+    handler: function(b, e) {
+      if(b.el.hasCls(b.pressedCls)) {
+        this.checkinStore.filters.add(new Ext.util.Filter({
+          property: 'employ',
+          value: true
+        }));
+        this.checkinStore.load();
+      } else {
+        this.checkinStore.clearFilter();
+        this.checkinStore.load();
+      }
+    },
+    scope: this,
+    ui: 'round'
+  },{
+    text: 'LF1M',
+    handler: function(b, e) {
+      if(b.el.hasCls(b.pressedCls)) {
+        this.checkinStore.filters.add(new Ext.util.Filter({
+          property: 'employment',
+          value: true
+        }));
+        this.checkinStore.load();
+      } else {
+        this.checkinStore.clearFilter();
+        this.checkinStore.load();
+      }
+    },
+    scope: this,
+    ui: 'round'
+  },{
+    xtype: 'spacer'
+  }]
 });
 
 var checkinStore = new Ext.data.Store({
+  autoLoad: false,
   model: 'Checkin',
   proxy: {
     model: 'Checkin',
@@ -156,7 +218,7 @@ var checkinStore = new Ext.data.Store({
       root: 'checkins'
     }
   },
-  autoLoad: false,
+  remoteFilter: true,
   listeners: {
     scope: this,
     load: {
@@ -265,6 +327,7 @@ var checkinFormPanel = new Ext.form.FormPanel({
       }
     }
   },
+  scroll: 'vertical',
   clearForm: function() {
     var checkin = Ext.ModelMgr.create({}, 'Checkin');
     this.load(checkin);
@@ -282,5 +345,5 @@ var checkinButton = new Ext.Button({
 });
 
 var eventPanel = new Ext.Container({
-  items: [eventContainer, checkinButton, checkinList]
+  items: [eventContainer, filterControls, checkinButton, checkinList]
 });

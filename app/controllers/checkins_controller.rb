@@ -10,7 +10,16 @@ class CheckinsController < ApplicationController
       else
         @checkins = Checkin.unhidden
     end
-    
+
+    ActiveSupport::JSON.decode(params[:filter]).each do |filter|
+      case filter["property"]
+        when "employ"
+          @checkins = @checkins.where(:employ => true)
+        when "employment"
+          @checkins = @checkins.where(:employment => true)
+      end
+    end if params[:filter].present?
+
     respond_with(@checkins) do |format|
       format.json do
         render :json => {:success => true, :total => @checkins.page(params[:page]).total_entries, :checkins => @checkins.page(params[:page]).as_json(:include => {:user => {:only => :name}}, :as => as_what?)}

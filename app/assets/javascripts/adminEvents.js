@@ -52,6 +52,7 @@ var adminEventFormPanel = new Ext.form.FormPanel({
       }
     }
   },
+  scroll: 'vertical',
   clearForm: function() {
     var event = Ext.ModelMgr.create({
       'id': undefined,
@@ -65,7 +66,7 @@ var adminEventFormPanel = new Ext.form.FormPanel({
       if(item.xtype == "datetimepickerfield") {
         item.setValue(null);
       }
-    })
+    });
   },
   loadFormFromRecord: function(rec) {
     var event = Ext.ModelMgr.create({

@@ -15,4 +15,4 @@ span.title                        {font-size:15px; font-weight:bold; color:#333;
 span.employ                       {background-image:url(images/lf1m.png);}
 span.employment                   {background-image:url(images/lfw.png);}
 
-.list                             {border: 5px double;}
+.list                             {border: 5px double; background: url(images/aorlogo.png) center center no-repeat fixed !important;}
