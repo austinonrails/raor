@@ -112,6 +112,7 @@ var roleStore = new Ext.data.Store({
 var roleList = new Ext.List({
   itemTpl: '{role}',
   multiSelect: true,
+  scroll: false,
   simpleSelect: true,
   store: roleStore,
   selectRoles: function(roles) {
@@ -129,6 +130,7 @@ var roleList = new Ext.List({
 });
 
 var userFormPanel = new Ext.form.FormPanel({
+  flex: 1,
   items: [{
     xtype: 'textfield',
     name: 'name',

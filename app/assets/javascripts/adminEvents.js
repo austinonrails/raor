@@ -28,6 +28,13 @@ var adminEventFormPanel = new Ext.form.FormPanel({
     name: 'id'
   },{
     xtype: 'button',
+    text: 'Manage Checkins',
+    scope: this,
+    handler: function() {
+      this.application.raor.setActiveItem(adminCheckinList);
+    }
+  },{
+    xtype: 'button',
     ui: 'confirm',
     text: 'Submit',
     scope: this,
@@ -52,7 +59,11 @@ var adminEventFormPanel = new Ext.form.FormPanel({
       }
     }
   },
-  scroll: 'vertical',
+  flex: 1,
+  scroll: {
+    constrain: 'parent',
+    direciton: 'vertical'
+  },
   clearForm: function() {
     var event = Ext.ModelMgr.create({
       'id': undefined,
@@ -202,6 +213,7 @@ var adminCheckinList = new Ext.List({
            '<br/><p class="meta"><span class="shoutout">{shoutout}</span></p><button class="hideCheckin{[values.hidden ? " hidden" : ""]}">{[values.hidden ? "Unhide" : "Hide"]}</button><button class="deleteCheckin">Delete</button></div>',
   disableSelection: true,
   emptyText: 'There is no-one currently checked in.',
+  fullscreen: true,
   listeners: {
     scope: this,
     selectionchange: {
@@ -248,7 +260,8 @@ var adminCheckinList = new Ext.List({
     ptype: 'pullrefresh'
   }],
   singleSelect: true,
-  store: adminCheckinStore
+  store: adminCheckinStore,
+  ui: 'action'
 });
 
 var adminEventPanel = new Ext.Container({
@@ -256,5 +269,5 @@ var adminEventPanel = new Ext.Container({
     type: 'vbox',
     align: 'stretch'
   },
-  items: [adminEventFormPanel, adminCheckinList]
+  items: [adminEventFormPanel]
 });

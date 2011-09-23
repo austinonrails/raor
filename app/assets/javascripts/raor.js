@@ -4,7 +4,7 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
     if(window.ADMIN && adminToolbar) {
       Ext.apply(config, {
         dockedItems: [toolbar, adminToolbar],
-        items: [eventsList, eventPanel, checkinFormPanel, adminEventsList, adminEventPanel, usersPanel, userFormPanel]
+        items: [eventsList, eventPanel, eventCheckinContainer, checkinFormPanel, adminEventsList, adminEventPanel, usersPanel, userFormPanel]
       });
     }
     Ext.ux.Raor.superclass.constructor.call(this, config);
@@ -12,9 +12,10 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
   fullscreen: true,
   layout: 'card',
   loaded: false,
+  monitorOrientation: true,
 
   dockedItems: [toolbar],
-  items: [eventsList, eventPanel, checkinFormPanel],
+  items: [eventsList, eventPanel, eventCheckinContainer, checkinFormPanel],
   prevCard: [],
   activatePrevCard: function() {
     if(this.prevCard.length > 0) {
@@ -44,23 +45,24 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
         if(window.application.loaded) this.setActiveItem(window.eventPanel);
       }
     },
-    afterlayout: {
-      fn: function(container) {
-        this.setCardHeight(this.getActiveItem());
-      }
-    },
     cardSwitch: {
       fn: function(container, newCard, oldCard, index, animated) {
         this.setCardHeight(newCard)
       }
+    },
+    orientationchange: {
+      fn: function(container, orientation, width, height) {
+        this.setCardHeight(this.getActiveItem());
+      }
     }
   },
   setCardHeight: function(card) {
-//    var body = Ext.get(Ext.DomQuery.select("body")[0]);
-//    var height = toolbar.getHeight() + card.getHeight();
-//    if(adminToolbar) height += adminToolbar.getHeight();
-//    body.setHeight(height);
-
+    var body = Ext.get(Ext.DomQuery.select("body")[0]);
+    var height = Ext.Element.getViewportWidth() - toolbar.getHeight();
+    if(adminToolbar) height -= adminToolbar.getHeight();
+    body.setHeight(height);
+    card.setHeight(height);
+    
     if(card.xtype != "list") {
       var list_index = card.items.findIndex('xtype', 'list');
       if(list_index && list_index >= 0) {

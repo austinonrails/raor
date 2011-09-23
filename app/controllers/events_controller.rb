@@ -19,7 +19,7 @@ class EventsController < ApplicationController
         format.json do
           events = @events.page(params[:page])
           events.map{|event| event.current_user = current_user}
-          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)}
+          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)}
         end
       end
     end
@@ -41,7 +41,7 @@ class EventsController < ApplicationController
         format.json do
           events = Event.page(params[:page])
           events.map{|event| event.current_user = current_user}
-          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)}
+          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)}
         end
       end
     end
@@ -59,7 +59,7 @@ class EventsController < ApplicationController
 
       format.json do
         @event.current_user = current_user
-        render :json => {:success => true, :events => @event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)}
+        render :json => {:success => true, :events => @event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)}
       end
     end
   end
@@ -86,7 +86,7 @@ class EventsController < ApplicationController
 
       format.json do
         if @event.save
-          render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)]}
+          render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)]}
         else
           render :json => {:success => false}
         end
@@ -112,7 +112,7 @@ class EventsController < ApplicationController
 
       format.json do
         if can?(:manage, @event) && @event.update_attributes(params[:events].first)
-          render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in?, :as => as_what?)]}
+          render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)]}
         else
           render :json => {:succes => false, :events => []}
         end

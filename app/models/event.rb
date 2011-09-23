@@ -10,7 +10,7 @@ class Event < ActiveRecord::Base
   scope :active, :conditions => ["events.end_date > ? AND events.start_date <= ?", Time.now, Time.now]
   scope :current, :conditions => "events.end_date >= (SELECT date('now'))", :order => "events.end_date ASC"
 
-  def is_checked_in? user=nil
+  def is_checked_in user=nil
     user ||= current_user
     !users.find_by_id(user).nil?
   end
