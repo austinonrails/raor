@@ -14,6 +14,9 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :user_tokens
 
+  validates :email, :format => { :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}, :length => {:within => 6..254}, :presence => true, :uniqueness => true
+  validates :name, :format => {:with => /^[A-Za-z0-9_\s]+$/}, :length => {:within => 2..254}, :presence => true
+
   def self.find_for_twitter_oauth(omniauth, signed_in_resource=nil)
     authentication = UserToken.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])
     if authentication && authentication.user

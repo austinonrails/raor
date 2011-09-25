@@ -42,6 +42,7 @@ var adminEventFormPanel = new Ext.form.FormPanel({
       var event = Ext.ModelMgr.create({}, 'Event');
       if(this.adminEventFormPanel.record.data.id == "") {
         this.adminEventFormPanel.updateRecord(event);
+        event.dirty = false;
         this.adminEventsStore.add(event.data);
       } else {
         var record = this.adminEventsStore.findRecord("id", this.adminEventFormPanel.record.data.id);

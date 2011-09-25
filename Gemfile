@@ -21,6 +21,11 @@ gem 'unicorn'
 # Deploy with Capistrano
 gem 'capistrano'
 
+group :assets do
+  gem 'sass-rails', '~>3.1.0'
+  gem 'uglifier', '~>1.0.3'
+end
+
 group :development, :test do
 # To use debugger (ruby-debug for Ruby 1.8.7+, ruby-debug19 for Ruby 1.9.2+)
 #gem 'ruby-debug'

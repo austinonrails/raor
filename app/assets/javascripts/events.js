@@ -13,7 +13,7 @@ Ext.regModel('Event', {
   ],
   isCheckinTime: function(record) {
     current_date = new Date();
-    return current_date < record.data.end_date && current_date > record.data.start_date
+    return current_date < record.data.end_date && current_date > record.data.start_date;
   }
 });
 
@@ -155,17 +155,19 @@ var eventContainer = new Ext.DataView({
   itemSelector: "div.x-button",
   store: this.eventViewStore,
   tpl: new Ext.XTemplate('<tpl for=".">',
-         '<h2>{name}</h2><p class="description">{description}</p><p>Created By: {creator.name}</p>',
-         '<p>Start Date: {[values.start_date.toLocaleDateString()]}</p>',
-         '<p>Start Time: {[MilitaryTo12Hour(values.start_date)]}</p>',
-         '<p>Time Until: {[TimeRemaining(values.start_date)]}</p>',
-         '<p>End Date: {[values.end_date.toLocaleDateString()]}</p>',
-         '<p>End Time: {[MilitaryTo12Hour(values.end_date)]}</p>',
-         '<tpl if="!is_checked_in && new Date() &lt; end_date && new Date() &gt; start_date">',
-           '<div id="checkin" class="x-button x-button-normal"><span class="x-button-label">Checkin</span></div>',
-         '</tpl>',
-         '<div class="x-button x-button-normal"><span class="x-button-label">View Existing Checkins</span></div>',
-       '</tpl>'),
+    '<div class="event"><div>',
+      '<h2>{name}</h2><p class="description">{description}</p><p>Created By: {creator.name}</p>',
+      '<p>Start Date: {[values.start_date.toLocaleDateString()]}</p>',
+      '<p>Start Time: {[MilitaryTo12Hour(values.start_date)]}</p>',
+      '<p>Time Until: {[TimeRemaining(values.start_date)]}</p>',
+      '<p>End Date: {[values.end_date.toLocaleDateString()]}</p>',
+      '<p>End Time: {[MilitaryTo12Hour(values.end_date)]}</p>',
+    '</div></div>',
+    '<tpl if="!is_checked_in && new Date() &lt; end_date && new Date() &gt; start_date">',
+      '<div id="checkin" class="x-button x-button-normal"><span class="x-button-label">Checkin</span></div>',
+    '</tpl>',
+    '<div class="x-button x-button-normal"><span class="x-button-label">View Existing Checkins</span></div>',
+  '</tpl>'),
   listeners: {
     scope: this,
     render: {
@@ -176,7 +178,9 @@ var eventContainer = new Ext.DataView({
     },
     itemtap: {
       fn: function(dataView, index, node, e) {
-        switch(e.getTarget().innerHTML) {
+        var extnode = Ext.get(node);
+        if(extnode.first()) extnode = extnode.first();
+        switch(extnode.getHTML()) {
           case "Checkin":
             this.checkinFormPanel.clearForm();
             this.application.raor.setActiveItem(this.checkinFormPanel);
@@ -273,7 +277,8 @@ var checkinList = new Ext.List({
   disableSelection: true,
   emptyText: 'There is no-one currently checked in.',
   indexBar: true,
-  itemTpl: '<div class="summary"><p class="title"><span class="title{[values.employment ? " employment" : ""]}{[values.employ ? " employ" : ""]}">{user.name}</span></p><br/><p class="meta"><span class="shoutout">{shoutout}</span></p></div>',
+  itemTpl: '<div class="summary"><p class="title"><span class="title{[values.employment ? " employment" : ""]}{[values.employ ? " employ" : ""]}">{user.name}</span>' +
+           '</p><br/><p class="meta"><span class="shoutout">{shoutout}</span></p></div>',
   listeners: {
     scope: this,
     selectionchange: {
@@ -338,6 +343,7 @@ var checkinFormPanel = new Ext.form.FormPanel({
       var checkin = Ext.ModelMgr.create({}, 'Checkin');
       if(this.checkinFormPanel.record.data.id == "") {
         this.checkinFormPanel.updateRecord(checkin);
+        checkin.dirty = false;
         this.checkinStore.add(checkin.data);
       } else {
         var record = this.checkinStore.findRecord("id", this.checkinFormPanel.record.data.id);

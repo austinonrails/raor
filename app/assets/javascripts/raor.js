@@ -51,7 +51,7 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
     },
     cardSwitch: {
       fn: function(container, newCard, oldCard, index, animated) {
-        this.setCardHeight(newCard)
+        this.setCardHeight(newCard);
       }
     },
     orientationchange: {
@@ -70,7 +70,6 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
     if(card.xtype != "list") {
       var list_index = card.items.findIndex('xtype', 'list');
       if(list_index && list_index >= 0) {
-        //var height = card.getHeight();
         card.items.each(function(item, index, length) {
           if(index != list_index) {
             height -= item.getHeight();
@@ -92,8 +91,7 @@ var application = new Ext.Application({
   getUrlVars: function() {
     var vars = [], hash;
     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-    for(var i = 0; i < hashes.length; i++)
-    {
+    for(var i = 0; i < hashes.length; i++) {
       hash = hashes[i].split('=');
       vars.push(hash[0]);
       vars[hash[0]] = hash[1];
@@ -121,16 +119,14 @@ function MilitaryTo12Hour(date) {
 function TimeRemaining(date) {
   var current_date = new Date();
   var time_left = date.getTime() - current_date.getTime();
-  if(time_left <= 0) {
-    return "<b>Already passed</b>";
-  }
+  if(time_left <= 0) return "<b>Already passed</b>";
   var second = 1000;
   var minute = second * 60;
   var hour = minute * 60;
   var day = hour * 24;
   var days = Math.floor(time_left / day);
   var hours = Math.floor(time_left % day / hour);
-  var minutes = Math.floor(time_left % day % hour / minute)
+  var minutes = Math.floor(time_left % day % hour / minute);
   var seconds = Math.floor(time_left % day % hour % minute / second);
   return days + " days " + hours + " hours " + minutes + " minutes " + seconds + " seconds";
 }

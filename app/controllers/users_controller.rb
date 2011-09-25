@@ -46,9 +46,9 @@ class UsersController < ApplicationController
 
       format.json do
         if @user.save
-          render :json => {:success => true, :users => [@user].as_json(:except => [:encrypted_password, :reset_password_token], :as => as_what?), :methods => :roles}
+          render :json => {:success => true, :users => [@user.as_json(:except => [:encrypted_password, :reset_password_token], :methods => :roles, :as => as_what?)]}
         else
-          render :json => {:success => false}
+          render :json => {:success => false, :errors => @user.errors, :users => []}
         end
       end
     end
@@ -78,22 +78,28 @@ class UsersController < ApplicationController
       format.json do
         if params[:users].blank? || params[:users][0].blank?
           flash[:error] = "Error while trying to update user"
-          render :json => {:success => false}
+          render :json => {:success => false, :errors => @user.errors, :users => [], :errors => @user.errors, :users => []}
         elsif @user.update_attributes(params[:users][0]) && @user.save
           flash[:notice] = "Successfully updated user #{@user.name}"
 
-          render :json => {:success => true, :users => [@user].as_json(:except => [:encrypted_password, :reset_password_token], :methods => :roles, :as => as_what?)}
+          render :json => {:success => true, :users => [@user.as_json(:except => [:encrypted_password, :reset_password_token], :methods => :roles, :as => as_what?)]}
         else
           flash[:error] = "Failed to update user #{@user.name}"
-          render :json => {:success => false}
+          render :json => {:success => false, :errors => @user.errors, :users => []}
         end
       end
     end
   end
 
   def destroy
-    @user.destroy unless @user.blank?
-
-    respond_with(@user)
+    respond_with(@user)do |format|
+      format.json do
+        if can?(:manage, @user) && @user.destroy
+          render :json => {:success => true, :users => []}
+        else
+          render :json => {:success => false, :users => []}
+        end
+      end
+    end
   end
 end

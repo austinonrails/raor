@@ -1,6 +1,6 @@
 Ext.regModel('User', {
   fields: [
-    {name: 'id', type: 'int'},
+    {name: 'id', type: 'auto'},
     {name: 'email', type: 'string'},
     {name: 'password', type: 'string'},
     {name: 'reset_password_sent_at', type: 'date'},
@@ -13,26 +13,50 @@ Ext.regModel('User', {
     {name: 'name', type: 'string'},
     {name: 'created_at', type: 'date'},
     {name: 'updated_at', type: 'date'},
-    {name: 'roles', type: 'auto'}]
+    {name: 'roles', type: 'auto'}
+  ],
+  validations: [
+    {type: 'presence', field: 'email'},
+    {type: 'length', field: 'email', min: 6, max: 254},
+    {type: 'presence', field: 'name'},
+    {type: 'length', field: 'name', min: 2, max: 254},
+    {type: 'presence', field: 'password'},
+    {type: 'length', field: 'password', min: 6, max: 254}
+  ]
 });
 
 Ext.regModel('Role', {
   fields: [
     {name: 'role', type: 'string'}
+  ],
+  validations: [
+    {type: 'inclusion', field: 'role', list: ['admin', 'moderator', 'author', 'banned']}
   ]
 });
 
 var usersStore = new Ext.data.Store({
   model: 'User',
-  storeId: 'id',
+  clearOnPageLoad: false,
   proxy: {
-    model: 'User',
     type: 'railsrest',
     format: 'json',
     url: '/admin_users',
     reader: {
       type: 'json',
       root: 'users'
+    },
+    writer: {
+      type: 'json',
+      root: 'users'
+    },
+    listeners: {
+      scope: this,
+      exception: {
+        fn: function(proxy, response, operation) {
+          this.usersStore.remove(this.usersStore.last());
+          Ext.Msg.alert("Failed","Failed to create user.<br/>Most likely a user with the same email address already exists.");
+        }
+      }
     }
   },
   autoLoad: true,
@@ -50,8 +74,7 @@ var newUserButton = new Ext.Button({
   text: 'New User',
   scope: this,
   handler: function(btn) {
-    var user = Ext.ModelMgr.create({id: undefined}, 'User');
-    this.userFormPanel.load(user);
+    this.userFormPanel.clearForm();
     this.roleStore.loadRoles(window.ROLES);
 
     this.application.raor.setActiveItem(this.userFormPanel);
@@ -63,7 +86,7 @@ var newUserButton = new Ext.Button({
 var usersList = new Ext.List({
   cls: 'list',
   indexBar: true,
-  itemTpl: '<h2>{name}</h2><p class="email">{email}</p>',
+  itemTpl: '<h2 ref="{id}">{name}</h2><p class="email">{email}</p><button class="deleteEvent">Delete</button>',
   listeners: {
     scope: this,
     selectionchange: {
@@ -76,6 +99,23 @@ var usersList = new Ext.List({
           this.application.raor.setActiveItem(this.userFormPanel);
           this.roleList.selectRoles(user.data.roles);
         }
+      }
+    },
+    update: {
+      fn: function(dataView) {
+        var deletes = Ext.DomQuery.select("button.deleteEvent");
+        Ext.each(deletes, function(item, index, allItems) {
+          var elem = Ext.get(item);
+          elem.removeAllListeners();
+          elem.addListener("tap", function(evt, el, o) {
+            var id = Ext.get(Ext.get(el).prev("h2")).getAttribute('ref');
+            var index = this.usersStore.findExact("id", parseInt(id));
+            this.usersStore.removeAt(index);
+            this.usersStore.sync();
+          }, this, {
+            stopEvent: true
+          });
+        }, this);
       }
     }
   },
@@ -103,7 +143,7 @@ var roleStore = new Ext.data.Store({
       this.remove(record);
     }, this);
     Ext.each(roles, function(item, index, allItems) {
-      this.add(Ext.ModelMgr.create({role: item}, 'Role'))
+      this.add(Ext.ModelMgr.create({role: item}, 'Role'));
     }, this);
     roleList.refresh();
   }
@@ -171,10 +211,29 @@ var userFormPanel = new Ext.form.FormPanel({
       if(formRecord == undefined || formRecord.data.id == undefined || formRecord.data.id == "") {
         var newRecord = Ext.ModelMgr.create({roles: roles}, 'User');
         this.userFormPanel.updateRecord(newRecord);
+        var errors = newRecord.validate();
+        var error_message = '';
+        errors.each(function(item, index, length) {
+          error_message += '<br/>' + item['field'] + ' ' + item['message'];
+        });
+        if(!errors.isValid()) {
+          Ext.Msg.alert('Error', error_message);
+          return false;
+        }
+        newRecord.dirty = false;
         this.usersStore.add(newRecord);
       } else {
         var storeRecord = usersStore.getById(formRecord.data.id);
         this.userFormPanel.updateRecord(storeRecord);
+        var errors = storeRecord.validate();
+        var error_message = '';
+        errors.each(function(item, index, length) {
+          error_message += '<br/>' + item['field'] + ' ' + item['message'];
+        });
+        if(!errors.isValid()) {
+          Ext.Msg.alert('Error', error_message);
+          return false;
+        }
         storeRecord.data.roles = roles;
       }
       this.usersStore.sync();
@@ -186,17 +245,16 @@ var userFormPanel = new Ext.form.FormPanel({
     xtype: 'container',
     id: 'info'
   }],
+  clearForm: function() {
+    var user = Ext.ModelMgr.create({}, 'User');
+    this.load(user);
+  },
   listeners: {
     scope: this,
     submit: {
       fn: function(form, result) {
         this.application.raor.activatePrevCard();
         this.usersStore.load();
-      }
-    },
-    exception: {
-      fn: function(form, result) {
-        Ext.Msg.alert("Failed","Failed to checkin due to error.");
       }
     }
   },
@@ -205,7 +263,7 @@ var userFormPanel = new Ext.form.FormPanel({
     var info = Ext.ComponentMgr.get('info');
     var header = '<div class="x-field x-field-text x-label-align-left"><div class="x-form-label"><span>';
     var middle = '</span></div><div class="x-form-field-container">';
-    var end = '</div></div>'
+    var end = '</div></div>';
     var html = '';
     var fields = [
       {field: 'reset_password_sent_at', label: 'Reset Password Sent At'},
@@ -219,7 +277,7 @@ var userFormPanel = new Ext.form.FormPanel({
     ];
     Ext.each(fields, function(item, index, allItems) {
       html += header;
-      html += item['label']
+      html += item['label'];
       html += middle;
       var value = user.data[item['field']];
       if(value != undefined) {
