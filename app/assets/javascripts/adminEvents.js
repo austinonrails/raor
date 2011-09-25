@@ -65,13 +65,7 @@ var adminEventFormPanel = new Ext.form.FormPanel({
     direciton: 'vertical'
   },
   clearForm: function() {
-    var event = Ext.ModelMgr.create({
-      'id': undefined,
-      'name': undefined,
-      'description': undefined,
-      'start_date': undefined,
-      'end_date': undefined
-    }, 'Event');
+    var event = Ext.ModelMgr.create({}, 'Event');
     this.load(event);
     this.items.each(function(item, index, length) {
       if(item.xtype == "datetimepickerfield") {
@@ -84,8 +78,8 @@ var adminEventFormPanel = new Ext.form.FormPanel({
       'id': rec.data.id,
       'name': rec.data.name,
       'description': rec.data.description,
-      'start_date': new Date(rec.data.start_date),
-      'end_date': new Date(rec.data.end_date)
+      'start_date': rec.data.start_date,
+      'end_date': rec.data.end_date
     }, 'Event');
     this.load(event);
   }
@@ -149,18 +143,21 @@ var adminEventsList = new Ext.List({
           elem.removeAllListeners();
           elem.addListener("tap", function(evt, el, o) {
             var id = Ext.get(Ext.get(el).prev("h2")).getAttribute('ref');
-            var index = adminEventsStore.findExact("id", parseInt(id));
-            adminEventsStore.removeAt(index);
-            adminEventsStore.sync();
-            adminEventFormPanel.clearForm();
-            eventContainer.update(Ext.ModelMgr.create({},'Event').data);
-            checkinFormPanel.clearForm();
-            eventsStore.load();
-            checkinStore.remove(checkinStore.getRange());
-          }, {
+            var index = this.adminEventsStore.findExact("id", parseInt(id));
+            this.adminEventsStore.removeAt(index);
+            this.adminEventsStore.sync();
+            this.adminEventFormPanel.clearForm();
+            this.eventContainer.update(Ext.ModelMgr.create({},'Event'));
+            this.checkinFormPanel.clearForm();
+            this.eventsStore.load();
+            this.checkinStore.remove(this.checkinStore.getRange());
+            this.application.raor.removeCard(this.eventPanel);
+            this.application.raor.removeCard(this.checkinFormPanel);
+            this.application.raor.removeCard(this.checkinList);
+          }, this, {
             stopEvent: true
           });
-        });
+        }, this);
       }
     }
   },
@@ -177,7 +174,7 @@ var adminEventsList = new Ext.List({
 });
 
 var adminEventContainer = new Ext.Container({
-  tpl: '<h2>{name}</h2><p class="description">{description}</p><p>Created By: {creator.name}</p><p>Starts: {[new Date(values.start_date)]}</p><p>Ends: {[new Date(values.end_date)]}</p>'
+  tpl: '<h2>{name}</h2><p class="description">{description}</p><p>Created By: {creator.name}</p><p>Starts: {[values.start_date]}</p><p>Ends: {[values.end_date)]}</p>'
 });
 
 var adminCheckinStore = new Ext.data.Store({
@@ -202,6 +199,12 @@ var adminCheckinStore = new Ext.data.Store({
       fn: function(store, records, successful) {
         this.adminCheckinList.refresh();
       }
+    },
+    datachanged: {
+      fn: function(store) {
+        this.checkinStore.load();
+        this.eventsStore.load();
+      }
     }
   }
 });
@@ -210,7 +213,8 @@ var adminCheckinList = new Ext.List({
   cls: 'list',
   indexBar: true,
   itemTpl: '<div class="summary" ref="{[values.id]}"><p class="title"><span class="title{[values.employment ? " employment" : ""]}{[values.employ ? " employ" : ""]}">{user.name}</span></p>' +
-           '<br/><p class="meta"><span class="shoutout">{shoutout}</span></p><button class="hideCheckin{[values.hidden ? " hidden" : ""]}">{[values.hidden ? "Unhide" : "Hide"]}</button><button class="deleteCheckin">Delete</button></div>',
+           '<br/><p class="meta"><span class="shoutout">{shoutout}</span></p><button class="hideCheckin{[values.hidden ? " hidden" : ""]}">{[values.hidden ? "Unhide" : "Hide"]}</button>' +
+           '<button class="deleteCheckin">Delete</button></div>',
   disableSelection: true,
   emptyText: 'There is no-one currently checked in.',
   fullscreen: true,
@@ -231,10 +235,10 @@ var adminCheckinList = new Ext.List({
             var id = Ext.get(element.findParent(".summary")).getAttribute('ref');
             var record = adminCheckinStore.findRecord("id", parseInt(id));
             record.set('hidden', !element.hasCls("hidden"));
-            adminCheckinStore.sync();
-            checkinStore.load();
-          });
-        });
+            this.adminCheckinStore.sync();
+            this.checkinStore.load();
+          }, this);
+        }, this);
 
         var deletes = Ext.DomQuery.select("button.deleteCheckin");
         Ext.each(deletes, function(item, index, allItems) {
@@ -243,11 +247,11 @@ var adminCheckinList = new Ext.List({
           elem.addListener("click", function(evt, el, o) {
             var id = Ext.get(Ext.get(el).findParent(".summary")).getAttribute('ref');
             var index = adminCheckinStore.findExact("id", parseInt(id));
-            adminCheckinStore.removeAt(index);
-            adminCheckinStore.sync();
-            checkinStore.load();
-          });
-        });
+            this.adminCheckinStore.removeAt(index);
+            this.adminCheckinStore.sync();
+            this.application.raor.removeCard(this.eventPanel);
+          }, this);
+        }, this);
       }
     }
   },

@@ -16,3 +16,5 @@ span.employ                       {background-image:url(images/lf1m.png);}
 span.employment                   {background-image:url(images/lfw.png);}
 
 .list                             {border: 5px double; background: url(images/aorlogo.png) center center no-repeat fixed !important;}
+
+.x-button.hidden                  {display: none;}

@@ -9,17 +9,13 @@ Ext.regModel('Event', {
     {name: 'is_checked_in', type: 'boolean'},
     {name: 'name', type: 'string'},
     {name: 'start_date', type: 'date'},
-    {name: 'updated_at', type: 'date'}],
+    {name: 'updated_at', type: 'date'}
+  ],
   isCheckinTime: function(record) {
     current_date = new Date();
     return current_date < record.data.end_date && current_date > record.data.start_date
   }
 });
-
-function isCheckinTime(start_date, end_date) {
-  current_date = new Date();
-  return current_date < new Date(end_date) && current_date > new Date(start_date);
-}
 
 Ext.regModel('Checkin', {
   fields: [
@@ -32,7 +28,8 @@ Ext.regModel('Checkin', {
     {name: 'shoutout', type: 'string'},
     {name: 'updated_at', type: 'date'},
     {name: 'user', type: 'auto'},
-    {name: 'user_id', type: 'int'}]
+    {name: 'user_id', type: 'int'}
+  ]
 });
 
 var backButton = new Ext.Button({
@@ -84,13 +81,11 @@ var eventsStore = new Ext.data.Store({
               store.nextPage();
             } else {
               this.eventsList.refresh();
-              this.eventContainer.record = records[index];
-              this.eventContainer.update(records[index].data);
+              this.eventViewStore.remove(this.eventViewStore.getRange());
+              this.eventViewStore.add(records[index]);
               proxy = this.checkinStore.getProxy();
               proxy.url = "/events/" + records[index].data.id + "/checkins.json";
               this.checkinFormPanel.url = proxy.url;
-              (!records[index].data['is_checked_in'] && records[index].isCheckinTime(records[index])) ? this.checkinButton.show() : this.checkinButton.hide();
-              this.eventPanel.doLayout();
               this.checkinStore.load();
               this.checkinStore.currentPage = 1;
               this.backButton.show();
@@ -161,13 +156,13 @@ var eventContainer = new Ext.DataView({
   store: this.eventViewStore,
   tpl: new Ext.XTemplate('<tpl for=".">',
          '<h2>{name}</h2><p class="description">{description}</p><p>Created By: {creator.name}</p>',
-         '<p>Start Date: {[new Date(values.start_date).toLocaleDateString()]}</p>',
-         '<p>Start Time: {[MilitaryTo12Hour(new Date(values.start_date))]}</p>',
-         '<p>Time Until: {[TimeRemaining(new Date(values.start_date))]}</p>',
-         '<p>End Date: {[new Date(values.end_date).toLocaleDateString()]}</p>',
-         '<p>End Time: {[MilitaryTo12Hour(new Date(values.end_date))]}</p>',
-         '<tpl if="!is_checked_in && isCheckinTime(start_date, end_date)">',
-           '<div class="x-button x-button-normal"><span class="x-button-label">Checkin</span></div>',
+         '<p>Start Date: {[values.start_date.toLocaleDateString()]}</p>',
+         '<p>Start Time: {[MilitaryTo12Hour(values.start_date)]}</p>',
+         '<p>Time Until: {[TimeRemaining(values.start_date)]}</p>',
+         '<p>End Date: {[values.end_date.toLocaleDateString()]}</p>',
+         '<p>End Time: {[MilitaryTo12Hour(values.end_date)]}</p>',
+         '<tpl if="!is_checked_in && new Date() &lt; end_date && new Date() &gt; start_date">',
+           '<div id="checkin" class="x-button x-button-normal"><span class="x-button-label">Checkin</span></div>',
          '</tpl>',
          '<div class="x-button x-button-normal"><span class="x-button-label">View Existing Checkins</span></div>',
        '</tpl>'),
@@ -190,6 +185,7 @@ var eventContainer = new Ext.DataView({
             this.application.raor.setActiveItem(this.eventCheckinContainer);
             break;
           default:
+            break;
         }
       }
     }
@@ -262,6 +258,11 @@ var checkinStore = new Ext.data.Store({
     load: {
       fn: function(store, records, successful) {
         this.checkinList.refresh();
+      }
+    },
+    datachanged: {
+      fn: function(store, records, index) {
+        this.eventsStore.load();
       }
     }
   }
@@ -343,8 +344,9 @@ var checkinFormPanel = new Ext.form.FormPanel({
         this.checkinFormPanel.updateRecord(record);
       }
       this.checkinStore.sync();
-      this.checkinButton.hide();
-      this.application.raor.activatePrevCard();
+      this.application.raor.removeCard(this.eventPanel);
+      this.application.raor.setActiveItem(this.eventCheckinContainer);
+      this.application.raor.removeCard(this.checkinFormPanel);
     }
   }],
   listeners: {

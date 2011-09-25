@@ -10,7 +10,7 @@ var adminToolbar = new Ext.Toolbar({
     handler: function(btn) {
       this.backButton.show();
       this.adminEventFormPanel.clearForm();
-      this.adminCheckinStore.remove(this.adminCheckinStore.getRange());
+      if(this.adminCheckinStore.getCount() > 0) this.adminCheckinStore.remove(this.adminCheckinStore.getRange());
       this.application.raor.setActiveItem(this.adminEventPanel);
     }
   },{

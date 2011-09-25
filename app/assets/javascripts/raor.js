@@ -39,6 +39,13 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
   clearPrevCard: function() {
     this.prevCard = []
   },
+  removeCard: function(card) {
+    var newarray = [];
+    Ext.each(this.prevCard, function(item, index, allItems) {
+      if(card != item) newarray.push(item);
+    });
+    this.prevCard = newarray;
+  },
   listeners: {
     afterrender: {
       fn: function() {
@@ -58,15 +65,15 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
   },
   setCardHeight: function(card) {
     var body = Ext.get(Ext.DomQuery.select("body")[0]);
-    var height = Ext.Element.getViewportWidth() - toolbar.getHeight();
+    var height = Ext.Element.getViewportHeight() - toolbar.getHeight();
     if(adminToolbar) height -= adminToolbar.getHeight();
-    body.setHeight(height);
+    body.setHeight(Ext.Element.getViewportHeight());
     card.setHeight(height);
     
     if(card.xtype != "list") {
       var list_index = card.items.findIndex('xtype', 'list');
       if(list_index && list_index >= 0) {
-        var height = card.getHeight();
+        //var height = card.getHeight();
         card.items.each(function(item, index, length) {
           if(index != list_index) {
             height -= item.getHeight();
