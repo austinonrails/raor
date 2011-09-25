@@ -16,10 +16,11 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
 
   dockedItems: [toolbar],
   items: [eventsList, eventPanel, eventCheckinContainer, checkinFormPanel],
-  prevCard: [],
+  prevCard: new Ext.util.MixedCollection(),
   activatePrevCard: function() {
     if(this.prevCard.length > 0) {
-      var item = this.prevCard.pop()
+      var item = this.prevCard.last();
+      this.prevCard.remove(item);
       if(item === eventsList) backButton.hide();
       else backButton.show();
       this.superclass().setActiveItem.call(this, item);
@@ -27,9 +28,9 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
   },
   setPrevCard: function(card) {
     if(card == undefined) {
-      this.prevCard.push(this.getActiveItem());
+      this.prevCard.add(this.getActiveItem());
     } else {
-      this.prevCard.push(card);
+      this.prevCard.add(card);
     }
   },
   setActiveItem: function (item, prevItem) {
@@ -37,14 +38,10 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
     this.superclass().setActiveItem.call(this, item);
   },
   clearPrevCard: function() {
-    this.prevCard = []
+    this.prevCard.clear();
   },
   removeCard: function(card) {
-    var newarray = [];
-    Ext.each(this.prevCard, function(item, index, allItems) {
-      if(card != item) newarray.push(item);
-    });
-    this.prevCard = newarray;
+    this.prevCard.remove(card);
   },
   listeners: {
     afterrender: {
