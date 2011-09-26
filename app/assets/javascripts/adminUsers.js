@@ -17,7 +17,7 @@ Ext.regModel('User', {
   ],
   validations: [
     {type: 'presence', field: 'email'},
-    {type: 'format', field: 'email', matcher:  /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i},
+    {type: 'format', field: 'email', matcher: /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i},
     {type: 'length', field: 'email', min: 6, max: 254},
     {type: 'presence', field: 'name'},
     {type: 'format', field: 'name', matcher: /^[A-Za-z0-9_\s]+/},
