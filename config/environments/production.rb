@@ -15,7 +15,7 @@ Raor::Application.configure do
   config.assets.compress = true
 
   # Don't fallback to assets pipeline if a precompiled asset is missed
-  config.assets.compile = true
+  config.assets.compile = false
 
   # Generate digests for assets URLs
   config.assets.digest = true
@@ -45,7 +45,7 @@ Raor::Application.configure do
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   config.assets.precompile += %w( admin.js adminEvents.js adminUsers.js DateTimePicker.js events.js ext_overrides.js raor.js )
   config.assets.js_compressor  = :uglifier
-  #config.assets.css_compressor = :scss
+  config.assets.css_compressor = :scss
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
