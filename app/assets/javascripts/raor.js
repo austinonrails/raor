@@ -66,7 +66,7 @@ Ext.ux.Raor = Ext.extend(Ext.Panel, {
     if(adminToolbar) height -= adminToolbar.getHeight();
     body.setHeight(Ext.Element.getViewportHeight());
     card.setHeight(height);
-    
+
     if(card.xtype != "list") {
       var list_index = card.items.findIndex('xtype', 'list');
       if(list_index && list_index >= 0) {

@@ -14,6 +14,7 @@ gem "oa-oauth", '~>0.2.6', :require => "omniauth/oauth"
 gem 'devise-twitter', '~>0.1.1'
 gem 'cancan', '~>1.6.5'
 gem 'will_paginate', '~>3.0.0'
+gem 'date_validator', '~> 0.6.2'
 
 # Use unicorn as the web server
 gem 'unicorn'
@@ -22,6 +23,7 @@ gem 'unicorn'
 gem 'capistrano'
 
 group :assets do
+  gem 'sqlite3'
   gem 'sass-rails', '~>3.1.0'
   gem 'uglifier', '~>1.0.3'
 end

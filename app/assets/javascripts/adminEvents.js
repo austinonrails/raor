@@ -42,10 +42,28 @@ var adminEventFormPanel = new Ext.form.FormPanel({
       var event = Ext.ModelMgr.create({}, 'Event');
       if(this.adminEventFormPanel.record.data.id == "") {
         this.adminEventFormPanel.updateRecord(event);
+        var errors = event.validate();
+        var error_message = '';
+        errors.each(function(item, index, length) {
+          error_message += '<br/>' + item['field'] + ' ' + item['message'];
+        });
+        if(!errors.isValid()) {
+          Ext.Msg.alert('Error', error_message);
+          return false;
+        }
         event.dirty = false;
         this.adminEventsStore.add(event.data);
       } else {
         var record = this.adminEventsStore.findRecord("id", this.adminEventFormPanel.record.data.id);
+        var errors = record.validate();
+        var error_message = '';
+        errors.each(function(item, index, length) {
+          error_message += '<br/>' + item['field'] + ' ' + item['message'];
+        });
+        if(!errors.isValid()) {
+          Ext.Msg.alert('Error', error_message);
+          return false;
+        }
         this.adminEventFormPanel.updateRecord(record);
       }
       this.adminEventsStore.sync();
@@ -100,6 +118,15 @@ var adminEventsStore = new Ext.data.Store({
     writer: {
       type: 'json',
       root: 'events'
+    },
+    listeners: {
+      scope: this,
+      exception: {
+        fn: function(proxy, response, operation) {
+          this.adminEventsStore.remove(this.adminEventsStore.last());
+          Ext.Msg.alert("Failed","Failed to create event.");
+        }
+      }
     }
   },
   autoLoad: true,
@@ -191,6 +218,15 @@ var adminCheckinStore = new Ext.data.Store({
     writer: {
       type: 'json',
       root: 'checkins'
+    },
+    listeners: {
+      scope: this,
+      exception: {
+        fn: function(proxy, response, operation) {
+          this.adminCheckinStore.remove(this.adminCheckinStore.last());
+          Ext.Msg.alert("Failed","Failed to hide or delete checkin.");
+        }
+      }
     }
   },
   autoLoad: false,
@@ -203,7 +239,7 @@ var adminCheckinStore = new Ext.data.Store({
     },
     datachanged: {
       fn: function(store) {
-        this.checkinStore.load();
+        if(this.checkinStore.proxy.url != '/checkins') this.checkinStore.load();
         this.eventsStore.load();
       }
     }

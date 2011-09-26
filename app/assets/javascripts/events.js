@@ -11,6 +11,13 @@ Ext.regModel('Event', {
     {name: 'start_date', type: 'date'},
     {name: 'updated_at', type: 'date'}
   ],
+  validations: [
+    {type: 'format', field: 'description', matcher: /^[\x20-\x7E]*$/},
+    {type: 'length', field: 'description', min: 0, max: 1024},
+    {type: 'presence', field: 'name'},
+    {type: 'format', field: 'name', matcher: /^[\x20-\x7E]*$/},
+    {type: 'length', field: 'name', min: 2, max: 254}
+  ],
   isCheckinTime: function(record) {
     current_date = new Date();
     return current_date < record.data.end_date && current_date > record.data.start_date;
@@ -29,6 +36,10 @@ Ext.regModel('Checkin', {
     {name: 'updated_at', type: 'date'},
     {name: 'user', type: 'auto'},
     {name: 'user_id', type: 'int'}
+  ],
+  validations: [
+    {type: 'format', field: 'shoutout', matcher: /^[\x20-\x7E]*$/},
+    {type: 'length', field: 'shoutout', min: 0, max: 254},
   ]
 });
 
@@ -254,6 +265,15 @@ var checkinStore = new Ext.data.Store({
     writer: {
       type: 'json',
       root: 'checkins'
+    },
+    listeners: {
+      scope: this,
+      exception: {
+        fn: function(proxy, response, operation) {
+          this.checkinStore.remove(this.checkinStore.last());
+          Ext.Msg.alert("Failed","Failed to create checkin.");
+        }
+      }
     }
   },
   remoteFilter: true,
@@ -343,11 +363,29 @@ var checkinFormPanel = new Ext.form.FormPanel({
       var checkin = Ext.ModelMgr.create({}, 'Checkin');
       if(this.checkinFormPanel.record.data.id == "") {
         this.checkinFormPanel.updateRecord(checkin);
+        var errors = checkin.validate();
+        var error_message = '';
+        errors.each(function(item, index, length) {
+          error_message += '<br/>' + item['field'] + ' ' + item['message'];
+        });
+        if(!errors.isValid()) {
+          Ext.Msg.alert('Error', error_message);
+          return false;
+        }
         checkin.dirty = false;
         this.checkinStore.add(checkin.data);
       } else {
         var record = this.checkinStore.findRecord("id", this.checkinFormPanel.record.data.id);
         this.checkinFormPanel.updateRecord(record);
+        var errors = record.validate();
+        var error_message = '';
+        errors.each(function(item, index, length) {
+          error_message += '<br/>' + item['field'] + ' ' + item['message'];
+        });
+        if(!errors.isValid()) {
+          Ext.Msg.alert('Error', error_message);
+          return false;
+        }
       }
       this.checkinStore.sync();
       this.application.raor.removeCard(this.eventPanel);

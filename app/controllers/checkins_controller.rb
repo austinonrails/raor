@@ -41,8 +41,12 @@ class CheckinsController < ApplicationController
 
   def create
     respond_with(@checkin) do |format|
+      @checkin.assign_attributes(params[:checkins].first, :as => as_what?)
+      @checkin.user_id = current_user.id
+      @checkin.current_user = current_user
+      @checkin.event_id = @event.id
       format.html do
-        if @event && (checkin = @event.checkin(current_user))
+        if @checkin.save
           flash[:notice] = "Successfully checked in to event #{event.name}"
           redirect_to edit_checkin_path(checkin)
         else
@@ -52,14 +56,10 @@ class CheckinsController < ApplicationController
       end
 
       format.json do
-        options = params[:checkins].first || {}
-        options["user_id"] = current_user.id
-
-        @checkin = @event.checkins.create(options.symbolize_keys, :as => as_what?)
-        if @checkin.valid?
+        if @checkin.save
           render :json => {:success => true, :checkins => [@checkin.as_json(:include => {:user => {:only => "name"}}, :as => as_what?)]}
         else
-          render :json => {:success => false}
+          render :json => {:success => false, :errors => @checkin.errors, :checkins => []}
         end
       end
     end
@@ -70,6 +70,7 @@ class CheckinsController < ApplicationController
   end
 
   def update
+    @checkin.current_user = current_user
     respond_with(@checkin) do |format|
       format.html do
         if params[:checkin]
@@ -81,8 +82,7 @@ class CheckinsController < ApplicationController
             redirect_to new_event_path
           end
         else
-          @event = Event.find(params[:event_id])
-          if @event && @event.checkin(current_user)
+          if @event && @checkin.save
             flash[:notice] = "Successfully checked in to event #{@event.name}"
             redirect_to event_path(@event)
           else
@@ -96,7 +96,7 @@ class CheckinsController < ApplicationController
         if can?(:manage, @event) && @checkin.update_attributes(params[:checkins].first, :as => as_what?)
           render :json => {:success => true, :checkins => [@checkin.as_json(:include => {:user => {:only => "name"}}, :as => as_what?)]}
         else
-          render :json => {:success => false, :checkins => []}
+          render :json => {:success => false, :errors => @checkin.errors, :checkins => []}
         end
       end
     end

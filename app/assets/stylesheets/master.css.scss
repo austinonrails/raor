@@ -50,30 +50,34 @@ ul#checkins {
   }
 }
 
-span {
-  .title {
-    font-size: 15px;
-    font-weight: bold;
-    color: #333;
-    display: block;
-    float: left;
-    padding-left: 26px;
-    background: url(images/status_unknown.png) no-repeat 0 2px;
-  }
+@mixin span-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  float: left;
+  padding-left: 26px;
+}
 
-  .employ {
-    background-image: url(images/lf1m.png);
-  }
+span.title {
+  @include span-title;
+  background: url(images/status_unknown.png) no-repeat 0 2px;
+}
 
-  .employment {
-    background-image: url(images/lfw.png);
-  }
+span.employ {
+  @include span-title;
+  background: url(images/lf1m.png) no-repeat 0 2px;
+}
+
+span.employment {
+  @include span-title;
+  background: url(images/lfw.png) no-repeat 0 2px;
 }
 
 .event {
   margin: 3px;
   border-radius: 30px;
-  -moz-border-radius: 20px;
+  -moz-border-radius: 30px;
   background-color: darken(white, 2%);
   border: 2px solid Olive;
 
