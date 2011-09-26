@@ -23,7 +23,7 @@ gem 'unicorn'
 gem 'capistrano'
 
 group :assets do
-  gem 'sqlite3'
+  #gem 'sqlite3'
   gem 'sass-rails', '~>3.1.0'
   gem 'uglifier', '~>1.0.3'
 end
