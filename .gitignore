@@ -5,3 +5,4 @@ log/*.log
 tmp/
 config/*.yml
 public/assets/*
+vendor/cache
