@@ -41,6 +41,12 @@ set :database_hosts do
   end
 end
 
+set :nginx_hosts do
+  `dig -tAXFR healthetechs.com | grep nginx | grep A | awk '{ print $1 }'`.split("\n").map do |record|
+    record.strip[0..-2]
+  end
+end
+
 #set :staging_hosts do
 #  `dig -tAXFR healthetechs.com | grep staging | grep A | awk '{ print $1 }'`.split("\n").map do |record|
 #    record.strip[0..-2]
@@ -88,6 +94,13 @@ namespace :deploy do
       puts "Rescue: It appears that unicorn is not running, starting ..."
       run "sh #{current_path}/config/kill_server_processes unicorn"
       run "cd #{current_path}; bundle exec #{unicorn_binary} --daemonize --env production -c #{unicorn_config}"
+    end
+  end
+
+  desc "nginx restart"
+  task :restart, :roles => [:app, :web] do
+    nginx_hosts.each do |host|
+      `ssh -l -c 'kill -HUP $( cat /var/run/nginx.pid )' root@#{host}`
     end
   end
 end
