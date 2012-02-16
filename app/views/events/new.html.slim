@@ -1,0 +1,8 @@
+.events data-role="page" data-title="New Events"
+  h2
+    | Create New Event
+  = form_for @event do |form|
+    = render :partial => "form", :locals => {:form => form}
+    p
+      button type="submit" class="ui-btn-hidden"
+        | Add Event

@@ -1,0 +1,21 @@
+= errors_for(@event, flash[:error]).html_safe
+
+div data-role="fieldcontain"
+  = form.label :name
+  = form.text_field :name
+
+div data-role="fieldcontain"
+  = form.label :description
+  = form.text_area :description
+
+div data-role="fieldcontain"
+  = form.label :start_date
+  = form.text_field :start_date, :"data-role" => "datebox", :"data-options" => '{"mode": "flipbox", "dateFormat":"%Y-%m-%d", "closeCallback": "$(\"#event_start_time\").datebox(\"open\");"}'
+  = form.label :start_time
+  = form.text_field :start_time, :"data-role" => "datebox", :"data-options" => '{"mode": "timebox", "timeFormatOverride": 12}'
+
+div data-role="fieldcontain"
+  = form.label :end_date
+  = form.text_field :end_date, :"data-role" => "datebox", :"data-options" => '{"mode": "flipbox", "dateFormat":"%Y-%m-%d", "closeCallback": "$(\"#event_end_time\").datebox(\"open\");"}'
+  = form.label :end_time
+  = form.text_field :end_time, :"data-role" => "datebox", :"data-options" => '{"mode": "timebox", "timeFormatOverride": 12}'

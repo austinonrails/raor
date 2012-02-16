@@ -1,0 +1,24 @@
+.events data-role="page" data-title="#{@event.name}"
+  h2
+    = @event.name
+  p
+    = @event.description
+  p
+    | Starts at: #{@event.start_datetime}
+  p
+    | Ends at: #{@event.end_datetime}
+  - if @event.is_checked_in(current_user)
+    | Checked In
+  - else
+    = button_to "Check In", event_checkins_path(@event), :"data-inline" => "true"
+
+  - if can? :update, @event
+    p
+      = button_to "Edit", edit_event_path(@event), :method => :get, :"data-inline" => "true"
+    = button_to "Back", events_path, :method => :get, :"data-inline" => "true", :"data-rel" => "back"
+
+  h3
+    | Current checkins
+  .event_checkins
+    ul#checkins data-role="listview"
+      = render :partial => "checkins/checkin", :collection => @event.checkins

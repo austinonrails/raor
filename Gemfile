@@ -1,20 +1,21 @@
 source 'http://rubygems.org'
 source "http://gems.github.com"
 
-gem 'rails', '3.1.0'
+gem 'rails', '3.2.0'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 #gem 'sqlite3'
-gem 'pg', '~>0.11.0'
-gem 'devise', '~>1.4.5'
-gem 'omniauth', '~>0.2.6'
-gem "oa-oauth", '~>0.2.6', :require => "omniauth/oauth"
-gem 'devise-twitter', '~>0.1.1'
-gem 'cancan', '~>1.6.5'
-gem 'will_paginate', '~>3.0.0'
-gem 'date_validator', '~> 0.6.2'
+gem 'pg'
+gem 'devise'
+gem 'omniauth'
+gem "omniauth-twitter"
+gem 'cancan'
+gem 'will_paginate'
+gem 'date_validator'
+gem 'jquery-rails'
+gem 'slim-rails'
 
 # Use unicorn as the web server
 gem 'unicorn'
@@ -23,27 +24,16 @@ gem 'unicorn'
 gem 'capistrano'
 
 group :assets do
-  gem 'execjs', '~>1.2.9'
-  gem 'therubyracer', '~>0.9.4'
-  gem 'sass-rails', '~>3.1.0'
-  gem 'uglifier', '~>1.0.3'
+  gem 'execjs'
+  gem 'therubyracer'
+  gem 'sass-rails'
+  gem 'uglifier'
 end
 
 group :development, :test do
 # To use debugger (ruby-debug for Ruby 1.8.7+, ruby-debug19 for Ruby 1.9.2+)
 #gem 'ruby-debug'
   gem 'ruby-debug19', :require => 'ruby-debug'
+  gem 'jasmine'
+  gem 'jasmine-headless-webkit'
 end
-
-# Bundle the extra gems:
-# gem 'bj'
-# gem 'nokogiri'
-# gem 'sqlite3-ruby', :require => 'sqlite3'
-# gem 'aws-s3', :require => 'aws/s3'
-
-# Bundle gems for the local environment. Make sure to
-# put test-only gems in this group so their generators
-# and rake tasks are available in development mode:
-# group :development, :test do
-#   gem 'webrat'
-# end

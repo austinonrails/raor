@@ -4,20 +4,52 @@ class Event < ActiveRecord::Base
   has_many :users, :through => :checkins
 
   attr_accessor :current_user
-  attr_accessible :description, :end_date, :name, :start_date, :as => :default
-  attr_accessible :created_at, :creator_id, :description, :end_date, :id, :name, :start_date, :updated_at, :as => :admin
+  attr_accessible :description, :end_date, :end_time, :name, :start_date, :start_time, :as => :default
+  attr_accessible :created_at, :creator_id, :description, :end_date, :end_time, :id, :name, :start_date, :start_time, :updated_at, :as => :admin
 
   scope :active, :conditions => ["events.end_date > ? AND events.start_date <= ?", Time.zone.now, Time.zone.now]
   scope :current, :conditions => "events.end_date >= (SELECT date('now'))", :order => "events.end_date ASC"
 
   validates :name, :format => {:with => /^[\x20-\x7E]+$/}, :length => {:within => 2..254}, :presence => true
   validates :description, :format => {:with => /^[\x20-\x7E]*$/}, :length => {:within => 0..254}
-  validates :start_date, :date => {:before => :end_date}
-  validates :start_date, :date => {:after => Time.zone.now}, :on => :create
-  validates :end_date, :date => {:after => :start_date}
+  validates :start_datetime, :date => {:before => :end_datetime}
+  validates :start_datetime, :date => {:after => Time.zone.now}, :on => :create
+  validates :end_datetime, :date => {:after => :start_datetime}
 
   def is_checked_in user=nil
     user ||= current_user
     !users.find_by_id(user).nil?
+  end
+
+  def start_date
+    self.start_datetime.to_date if self.start_datetime
+  end
+
+  def start_date=(value)
+    self.start_datetime = Time.zone.parse("#{value} #{self.start_datetime.strftime('%H:%M:%S') if self.start_datetime}")
+  end
+
+  def start_time
+    self.start_datetime.strftime('%I:%M %p') if self.start_datetime
+  end
+
+  def start_time=(value)
+    self.start_datetime = Time.zone.parse("#{self.start_datetime.to_date.to_s if self.start_datetime} #{value}")
+  end
+
+  def end_date
+    self.end_datetime.to_date if self.end_datetime
+  end
+
+  def end_date=(value)
+    self.end_datetime = Time.zone.parse("#{value} #{self.end_datetime.strftime('%H:%M:%S') if self.end_datetime}")
+  end
+
+  def end_time
+    self.end_datetime.strftime('%I:%M %p') if self.end_datetime
+  end
+
+  def end_time=(value)
+    self.end_datetime = Time.zone.parse("#{self.end_datetime.to_date.to_s if self.end_datetime} #{value}")
   end
 end

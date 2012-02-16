@@ -1,0 +1,8 @@
+.events data-role="page" data-title="Edit Event"
+  h2
+    | Edit Event "#{@event.name}"
+  = form_for @event do |form|
+    = render :partial => "form", :locals => {:form => form}
+    p
+      button type="submit" class="ui-btn-hidden"
+        | Submit

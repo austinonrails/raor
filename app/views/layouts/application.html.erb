@@ -2,25 +2,14 @@
 <html>
 <head>
   <title>Raor</title>
-  <% if browser_is?("webkit") %>
-    <%= stylesheet_link_tag 'master', 'sencha-touch' %>
-    <% if can?(:create, :Event) || can?(:create, :User) %>
-      <%= javascript_include_tag Rails.env == "production" ? 'sencha-touch' : 'sencha-touch-debug', 'DateTimePicker', 'ext_overrides.js', 'events', 'adminEvents', 'adminUsers', 'admin', 'raor' %>
-    <% else %>
-      <%= javascript_include_tag Rails.env == "production" ? 'sencha-touch' : 'sencha-touch-debug', 'ext_overrides.js', 'events', 'raor' %>
-    <% end %>
+  <% if can?(:create, :Event) || can?(:create, :User) %>
+    <%= javascript_include_tag "application", 'admin' %>
   <% else %>
-    <%= stylesheet_link_tag 'master' %>
-    <%= javascript_include_tag 'application' %>
+    <%= javascript_include_tag "application" %>
   <% end %>
+  <%= stylesheet_link_tag 'application' %>
   <%= csrf_meta_tag %>
-  <script language="Javascript">
-    Ext.Ajax.extraParams = { authenticity_token: "<%= form_authenticity_token %>" };
-    <% if can? :create, Event %>
-    window.ADMIN = true;
-    window.ROLES = ['<%= User::ROLES.join("','") %>'];
-    <% end %>
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
   <p class="notice"><%= notice %></p>

@@ -7,13 +7,11 @@ class EventsController < ApplicationController
   def index
     # Must manually authorize due to setting current_user on events
     if can?(:read, Event) && can?(:read, User)
+      @events = @events.page(params[:page])
+
       respond_with(@events) do |format|
         format.html do
-          if browser_is?("webkit")
-            render :nothing => true, :layout => true
-          else
-            render :index
-          end
+          render
         end
 
         format.json do
@@ -25,36 +23,10 @@ class EventsController < ApplicationController
     end
   end
 
-  def current
-     # Must manually authorize due to setting current_user on events
-    if can?(:read, Event) && can?(:read, User)
-      event = Event.current.first
-      respond_to do |format|
-        format.html do
-          if event
-            redirect_to event_path(event)
-          else
-            redirect_to events_path
-          end
-        end
-
-        format.json do
-          events = Event.page(params[:page])
-          events.map{|event| event.current_user = current_user}
-          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)}
-        end
-      end
-    end
-  end
-
   def show
     respond_with(@event) do |format|
       format.html do
-        if browser_is?("webkit")
-          redirect_to events_path(:current_event => @event)
-        else
-          render :index
-        end
+        render
       end
 
       format.json do
@@ -69,9 +41,8 @@ class EventsController < ApplicationController
   end
 
   def create
-    params[:events].first["creator_id"] = current_user.id.to_s
-    params[:events].first.delete(:id)
-    @event.assign_attributes(params[:events].first, :as => as_what?)
+    params[:event]["creator_id"] = current_user.id.to_s
+    @event.assign_attributes(params[:event], :as => as_what?)
 
     respond_with(@event) do |format|
       format.html do
@@ -80,7 +51,7 @@ class EventsController < ApplicationController
           redirect_to event_path(@event)
         else
           flash[:error] = "Failed to create event #{@event.name}"
-          redirect_to new_event_path
+          render :edit
         end
       end
 

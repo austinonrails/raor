@@ -1,0 +1,13 @@
+li.event
+  h3.ui-li-heading = event.name
+  p.ui-li-desc
+    | Starts at: #{event.start_date}
+  p.ui-li-desc
+    | Ends at: #{event.end_date}
+  - if event.is_checked_in(current_user)
+    p.ui-li-desc Checked In
+  - else
+    = button_to "Check In", event_checkins_path(event)
+
+  = button_to "Show", event_path(event), :method => :get if can? :read, event
+  = button_to "Edit", edit_event_path(event), :method => :get if can? :update, event

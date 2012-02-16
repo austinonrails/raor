@@ -1,5 +1,0 @@
-<div class="events">
-  <%= render :partial => "event", :collection => @events %>
-
-  <%= button_to "New Event", new_event_path, :method => :get if can? :create, Event%>
-</div>

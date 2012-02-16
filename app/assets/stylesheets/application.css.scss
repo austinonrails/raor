@@ -1,0 +1,29 @@
+/**
+ *= require jquery.mobile
+ *= require jquery.mobile.pagination
+ *= require jquery.mobile.datebox
+ */
+
+@mixin span-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  float: left;
+  padding-left: 26px;
+}
+
+span.title {
+  @include span-title;
+  background: url(images/status_unknown.png) no-repeat 0 2px;
+}
+
+span.employ {
+  @include span-title;
+  background: url(images/lf1m.png) no-repeat 0 2px;
+}
+
+span.employment {
+  @include span-title;
+  background: url(images/lfw.png) no-repeat 0 2px;
+}
