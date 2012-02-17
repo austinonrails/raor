@@ -1,0 +1,24 @@
+DOCTYPE html
+html
+  head
+    - if can?(:create, :Event) || can?(:create, :User)
+      = javascript_include_tag "application", 'admin'
+    - else
+      = javascript_include_tag "application"
+    = stylesheet_link_tag 'application'
+    = csrf_meta_tags
+    meta name="viewport" content="width=device-width, initial-scale=1"
+  body
+    div data-role="page" data-add-back-btn="true"
+      .header data-role="header" data-position="inline"
+        h1
+          | RAOR
+      p.notice
+        = notice
+      p.alert
+        = alert
+      = yield
+      - if can? :create, Event
+        .footer data-role="footer" data-position="fixed"
+          = link_to "Add Event", new_event_path, :method => :get, "data-role" => "button", "data-icon" => "plus"
+          = link_to "Manage Users", admin_users_path, :method => :get, "data-role" => "button", "data-icon" => "plus"

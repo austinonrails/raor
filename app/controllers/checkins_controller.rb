@@ -11,17 +11,17 @@ class CheckinsController < ApplicationController
         @checkins = Checkin.unhidden
     end
 
-    ActiveSupport::JSON.decode(params[:filter]).each do |filter|
-      case filter["property"]
-        when "employ"
-          @checkins = @checkins.where(:employ => true)
-        when "employment"
-          @checkins = @checkins.where(:employment => true)
-      end
-    end if params[:filter].present?
-
-    respond_with(@checkins) do |format|
+    respond_with(@event, @checkins) do |format|
       format.json do
+        ActiveSupport::JSON.decode(params[:filter]).each do |filter|
+          case filter["property"]
+            when "employ"
+              @checkins = @checkins.where(:employ => true)
+            when "employment"
+              @checkins = @checkins.where(:employment => true)
+          end
+        end if params[:filter].present?
+
         render :json => {:success => true, :total => @checkins.page(params[:page]).total_entries, :checkins => @checkins.page(params[:page]).as_json(:include => {:user => {:only => :name}}, :as => as_what?)}
       end
     end
@@ -40,22 +40,25 @@ class CheckinsController < ApplicationController
   end
 
   def create
-    respond_with(@checkin) do |format|
-      @checkin.assign_attributes(params[:checkins].first, :as => as_what?)
+    respond_with(@event, @checkin) do |format|
+      @checkin.assign_attributes(params[:checkin], :as => as_what?)
       @checkin.user_id = current_user.id
       @checkin.current_user = current_user
       @checkin.event_id = @event.id
+
       format.html do
         if @checkin.save
-          flash[:notice] = "Successfully checked in to event #{event.name}"
-          redirect_to edit_checkin_path(checkin)
+          flash[:notice] = "Successfully checked in to #{@event.name}"
+          redirect_to event_path(@event)
         else
-          flash[:error] = "Failed to check in to event #{event.name}"
-          redirect_to new_event_path
+          flash[:error] = "Failed to check in to #{@event.name}"
+          redirect_to event_path(@event)
         end
       end
 
       format.json do
+        @checkin.assign_attributes(params[:checkins].first, :as => as_what?)
+
         if @checkin.save
           render :json => {:success => true, :checkins => [@checkin.as_json(:include => {:user => {:only => "name"}}, :as => as_what?)]}
         else
@@ -71,7 +74,7 @@ class CheckinsController < ApplicationController
 
   def update
     @checkin.current_user = current_user
-    respond_with(@checkin) do |format|
+    respond_with(@event, @checkin) do |format|
       format.html do
         if params[:checkin]
           if @checkin.update_attributes(params[:checkin])
@@ -103,7 +106,18 @@ class CheckinsController < ApplicationController
   end
 
   def destroy
-    respond_with(@checkin) do |format|
+    respond_with(@event, @checkin) do |format|
+      name = @checkin.current_user.name if @checkin.current_user
+
+      format.html do
+        if @checkin.destroy
+          flash[:notice] = "Successfully destroyed checkin for #{name}"
+          redirect_to event_path(@event)
+        else
+          flash[:error] = "Failed to destroy checkin for #{name}"
+        end
+      end
+
       format.json do
         if @checkin.destroy
           render :json => {:success => true, :checkins => []}

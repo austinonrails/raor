@@ -1,0 +1,6 @@
+p.title
+  span.title class="#{' employment' if checkin.employment}#{' employ' if checkin.employ}"
+    = checkin.user.name
+p.meta
+  span.shoutout
+    = checkin.shoutout

@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
-  load_resource :event, :except => [:current]
-  authorize_resource :event, :except => [:index, :current]
+  load_resource :event
+  authorize_resource :event, :except => :index
 
   respond_to :html, :json
 
@@ -8,6 +8,7 @@ class EventsController < ApplicationController
     # Must manually authorize due to setting current_user on events
     if can?(:read, Event) && can?(:read, User)
       @events = @events.page(params[:page])
+      @events.each{|event| event.current_user = current_user}
 
       respond_with(@events) do |format|
         format.html do
@@ -15,22 +16,21 @@ class EventsController < ApplicationController
         end
 
         format.json do
-          events = @events.page(params[:page])
-          events.map{|event| event.current_user = current_user}
-          render :json => {:success => true, :total => events.total_entries, :events => events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)}
+          render :json => {:success => true, :total => @events.total_entries, :events => @events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)}
         end
       end
     end
   end
 
   def show
+    @event.current_user = current_user
+
     respond_with(@event) do |format|
       format.html do
         render
       end
 
       format.json do
-        @event.current_user = current_user
         render :json => {:success => true, :events => @event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)}
       end
     end
@@ -46,7 +46,7 @@ class EventsController < ApplicationController
 
     respond_with(@event) do |format|
       format.html do
-        if @event.save
+        if can?(:manage, @event) && @event.save
           flash[:notice] = "Successfully created event #{@event.name}"
           redirect_to event_path(@event)
         else
@@ -56,7 +56,7 @@ class EventsController < ApplicationController
       end
 
       format.json do
-        if @event.save
+        if can?(:manage, @event) && @event.save
           render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)]}
         else
           render :json => {:success => false, :events => [], :errors => @event.errors}
@@ -72,12 +72,12 @@ class EventsController < ApplicationController
   def update
     respond_with(@event) do |format|
       format.html do
-        if @event.update_attributes(params[:event])
+        if can?(:manage, @event) && @event.update_attributes(params[:event])
           flash[:notice] = "Successfully updated event #{@event.name}"
           redirect_to event_path(@event)
         else
           flash[:error] = "Failed to update event #{@event.name}"
-          redirect_to edit_event_path(@event)
+          render :edit
         end
       end
 
@@ -92,7 +92,17 @@ class EventsController < ApplicationController
   end
 
   def destroy
-    respond_with(@event)do |format|
+    respond_with(@event) do |format|
+      format.html do
+        if can?(:manage, @event) && @event.destroy
+          flash[:notice] = "Successfully destroyed event"
+          redirect_to events_path
+        else
+          flash[:error] = "Failed to destroy event #{@event.name}"
+          render :show
+        end
+      end
+
       format.json do
         if can?(:manage, @event) && @event.destroy
           render :json => {:success => true, :events => []}

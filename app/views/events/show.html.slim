@@ -1,24 +1,22 @@
-.events data-role="page" data-title="#{@event.name}"
-  h2
-    = @event.name
-  p
-    = @event.description
-  p
-    | Starts at: #{@event.start_datetime}
-  p
-    | Ends at: #{@event.end_datetime}
-  - if @event.is_checked_in(current_user)
-    | Checked In
-  - else
-    = button_to "Check In", event_checkins_path(@event), :"data-inline" => "true"
+h2
+  = @event.name
+p
+  = @event.description
+p
+  | Starts at: #{@event.start_datetime.localtime}
+p
+  | Ends at: #{@event.end_datetime.localtime}
+- if @event.is_checked_in(current_user)
+  | Checked In
+- elsif @event.active?
+  = link_to "Check In", new_event_checkin_path(@event), :"data-role" => "button", :"data-inline" => "true"
 
+p
   - if can? :update, @event
-    p
-      = button_to "Edit", edit_event_path(@event), :method => :get, :"data-inline" => "true"
-    = button_to "Back", events_path, :method => :get, :"data-inline" => "true", :"data-rel" => "back"
+    = link_to "Edit", edit_event_path(@event), :method => :get, :"data-role" => "button", :"data-inline" => "true"
 
-  h3
-    | Current checkins
-  .event_checkins
-    ul#checkins data-role="listview"
-      = render :partial => "checkins/checkin", :collection => @event.checkins
+h3
+  | Current checkins
+.event_checkins
+  ul#checkins data-role="listview" data-filter="true" data-split-icon="#{'delete' if can? :manage, @event}"
+    = render :partial => "checkins/checkin", :collection => @event.checkins

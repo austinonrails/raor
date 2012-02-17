@@ -1,0 +1,11 @@
+div data-role="fieldcontain"
+  fieldset data-role="controlgroup" data-type="horizontal"
+    = form.check_box :employment
+    = form.label :employment, "Looking for Employment"
+
+    = form.check_box :employ
+    = form.label :employ, "Looking to Employ"
+
+div data-role="fieldcontain"
+  = form.label :shoutout, "Shout-out!"
+  = form.text_field :shoutout

@@ -16,6 +16,20 @@ class Event < ActiveRecord::Base
   validates :start_datetime, :date => {:after => Time.zone.now}, :on => :create
   validates :end_datetime, :date => {:after => :start_datetime}
 
+  def active?
+    now = Time.zone.now
+    self.end_datetime > now && self.start_datetime <= now
+  end
+
+  def current_user
+    @user
+  end
+
+  def current_user=(user)
+    @user = user
+    self.creator_id = user,id
+  end
+
   def is_checked_in user=nil
     user ||= current_user
     !users.find_by_id(user).nil?
@@ -26,7 +40,7 @@ class Event < ActiveRecord::Base
   end
 
   def start_date=(value)
-    self.start_datetime = Time.zone.parse("#{value} #{self.start_datetime.strftime('%H:%M:%S') if self.start_datetime}")
+    self.start_datetime = Time.parse("#{value} #{self.start_datetime.strftime('%H:%M:%S') if self.start_datetime}")
   end
 
   def start_time
@@ -34,7 +48,7 @@ class Event < ActiveRecord::Base
   end
 
   def start_time=(value)
-    self.start_datetime = Time.zone.parse("#{self.start_datetime.to_date.to_s if self.start_datetime} #{value}")
+    self.start_datetime = Time.parse("#{self.start_datetime.to_date.to_s if self.start_datetime} #{value}")
   end
 
   def end_date
@@ -42,7 +56,7 @@ class Event < ActiveRecord::Base
   end
 
   def end_date=(value)
-    self.end_datetime = Time.zone.parse("#{value} #{self.end_datetime.strftime('%H:%M:%S') if self.end_datetime}")
+    self.end_datetime = Time.parse("#{value} #{self.end_datetime.strftime('%H:%M:%S') if self.end_datetime}")
   end
 
   def end_time
@@ -50,6 +64,6 @@ class Event < ActiveRecord::Base
   end
 
   def end_time=(value)
-    self.end_datetime = Time.zone.parse("#{self.end_datetime.to_date.to_s if self.end_datetime} #{value}")
+    self.end_datetime = Time.parse("#{self.end_datetime.to_date.to_s if self.end_datetime} #{value}")
   end
 end

@@ -1,15 +1,11 @@
-.events data-role="page" data-title="Events"
-  ul data-role="listview"
-    = render :partial => "event", :collection => @events
+ul data-role="listview" data-split-icon="#{'gear' if can? :manage, @event}"
+  = render :partial => "event", :collection => @events
 
-    - if @events.current_page > 1
-      li.ui-pagination-prev
-        a href="#{events_path(:page => @events.current_page - 1)}"
-          | Prev
-    - if @events.current_page < @events.total_pages
-      li.ui-pagination-next
-        a href="#{events_path(:page => @events.current_page + 1)}"
-          | Next
-  - if can? :create, Event
-    .footer data-role="footer" data-position="fixed"
-      = button_to "New Event", new_event_path, :method => :get
+  - if @events.current_page > 1
+    li.ui-pagination-prev
+      a href="#{events_path(:page => @events.current_page - 1)}"
+        | Prev
+  - if @events.current_page < @events.total_pages
+    li.ui-pagination-next
+      a href="#{events_path(:page => @events.current_page + 1)}"
+        | Next
