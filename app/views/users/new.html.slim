@@ -1,7 +1,7 @@
 h2
-  | Create New Event
-= form_for @event do |form|
+  | Create New User
+= form_for @user, :url => admin_users_path do |form|
   = render :partial => "form", :locals => {:f => form}
   p
     button type="submit" class="ui-btn-hidden"
-      | Add Event
+      | Add User

@@ -1,0 +1,6 @@
+h2
+  | Edit Checkin for #{@checkin.event.name}
+= form_for @checkin do |form|
+  = render :partial => "form", :locals => {:form => form}
+  p
+    = form.submit "Update Checkin"

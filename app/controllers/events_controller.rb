@@ -2,7 +2,7 @@ class EventsController < ApplicationController
   load_resource :event
   authorize_resource :event, :except => :index
 
-  respond_to :html, :json
+  respond_to :html
 
   def index
     # Must manually authorize due to setting current_user on events
@@ -14,10 +14,6 @@ class EventsController < ApplicationController
         format.html do
           render
         end
-
-        format.json do
-          render :json => {:success => true, :total => @events.total_entries, :events => @events.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)}
-        end
       end
     end
   end
@@ -25,15 +21,7 @@ class EventsController < ApplicationController
   def show
     @event.current_user = current_user
 
-    respond_with(@event) do |format|
-      format.html do
-        render
-      end
-
-      format.json do
-        render :json => {:success => true, :events => @event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)}
-      end
-    end
+    respond_with(@event)
   end
 
   def new
@@ -54,14 +42,6 @@ class EventsController < ApplicationController
           render :edit
         end
       end
-
-      format.json do
-        if can?(:manage, @event) && @event.save
-          render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)]}
-        else
-          render :json => {:success => false, :events => [], :errors => @event.errors}
-        end
-      end
     end
   end
 
@@ -80,14 +60,6 @@ class EventsController < ApplicationController
           render :edit
         end
       end
-
-      format.json do
-        if can?(:manage, @event) && @event.update_attributes(params[:events].first)
-          render :json => {:success => true, :events => [@event.as_json(:include => {:creator => {:only => "name"}}, :methods => :is_checked_in, :as => as_what?)]}
-        else
-          render :json => {:succes => false, :events => [], :errors => @event.errors}
-        end
-      end
     end
   end
 
@@ -100,14 +72,6 @@ class EventsController < ApplicationController
         else
           flash[:error] = "Failed to destroy event #{@event.name}"
           render :show
-        end
-      end
-
-      format.json do
-        if can?(:manage, @event) && @event.destroy
-          render :json => {:success => true, :events => []}
-        else
-          render :json => {:success => false, :events => [], :errors => @event.errors}
         end
       end
     end

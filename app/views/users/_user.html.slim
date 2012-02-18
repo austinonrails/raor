@@ -1,0 +1,7 @@
+- unless @alpha == user.name[0].upcase
+  - @alpha = user.name[0].upcase
+  li data-role="list-divider"
+    = @alpha
+li.user
+  a href="#{edit_admin_user_path(user)}"
+    Name: #{user.name}

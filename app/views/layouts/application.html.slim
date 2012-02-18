@@ -9,8 +9,8 @@ html
     = csrf_meta_tags
     meta name="viewport" content="width=device-width, initial-scale=1"
   body
-    div data-role="page" data-add-back-btn="true"
-      .header data-role="header" data-position="inline"
+    div#page data-role="page" data-add-back-btn="true"
+      .header data-role="header" data-position="fixed"
         h1
           | RAOR
       p.notice
@@ -21,4 +21,11 @@ html
       - if can? :create, Event
         .footer data-role="footer" data-position="fixed"
           = link_to "Add Event", new_event_path, :method => :get, "data-role" => "button", "data-icon" => "plus"
-          = link_to "Manage Users", admin_users_path, :method => :get, "data-role" => "button", "data-icon" => "plus"
+          div style="display: inline-block; float: right;"
+            select id="manage_users" data-icon="arrow-u"
+              option.hidden value="Manage Users"
+                | Manage Users
+              option value="#{admin_users_path}"
+                | List Users
+              option value="#{new_admin_user_path}"
+                | Add User

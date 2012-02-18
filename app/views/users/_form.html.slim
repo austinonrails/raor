@@ -1,0 +1,19 @@
+div data-role="fieldcontain"
+  = f.label :name
+  = f.text_field :name
+
+div data-role="fieldcontain"
+  = f.label :email
+  = f.email_field :email
+
+div data-role="fieldcontain"
+  = f.label :password
+  = f.password_field :password
+
+div data-role="fieldcontain"
+  = f.label :password_confirmation
+  = f.password_field :password_confirmation
+
+div data-role="fieldcontain"
+  = f.label :roles
+  = f.select :roles, User::ROLES, {}, :multiple => true, :"data-native-menu" => false

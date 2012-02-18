@@ -27,3 +27,7 @@ span.employment {
   @include span-title;
   background: url(images/lfw.png) no-repeat 0 2px;
 }
+
+.hidden {
+  display: none;
+}

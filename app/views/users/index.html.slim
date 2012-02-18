@@ -1,0 +1,11 @@
+ul data-role="listview" data-filter="true"
+  = render :partial => "user", :collection => @users
+
+  - if @users.current_page > 1
+    li.ui-pagination-prev
+      a href="#{users_path(:page => @users.current_page - 1)}"
+        | Prev
+  - if @users.current_page < @users.total_pages
+    li.ui-pagination-next
+      a href="#{users_path(:page => @users.current_page + 1)}"
+        | Next
