@@ -3,10 +3,10 @@ class User < ActiveRecord::Base
   
   devise :database_authenticatable, :registerable,
        :recoverable, :rememberable, :trackable, :validatable, :omniauthable
-  attr_accessible :api_key, :email, :name, :password, :password_confirmation, :provider, :remember_me, :roles, :user, :uid,
+  attr_accessible :api_key, :email, :employer, :name, :password, :password_confirmation, :provider, :remember_employer, :remember_me, :roles, :user, :uid,
                   :user_tokens_attributes, :as => :default
-  attr_accessible :created_at, :current_sign_in_at, :current_sign_in_ip, :email, :id, :last_sign_in_at, :last_sign_in_ip, :name,
-                  :remember_created_at, :reset_password_sent_at, :sign_in_count, :updated_at, :user_tokens_attributes, :as => :admin
+  attr_accessible :created_at, :current_sign_in_at, :current_sign_in_ip, :email, :employer, :id, :last_sign_in_at, :last_sign_in_ip, :name,
+                  :remember_created_at, :remember_employer, :reset_password_sent_at, :sign_in_count, :updated_at, :user_tokens_attributes, :as => :admin
 
   has_many :checkins
   has_many :events, :through => :checkins
@@ -16,6 +16,7 @@ class User < ActiveRecord::Base
 
   validates :email, :format => { :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i}, :length => {:within => 6..254}, :presence => true, :uniqueness => true
   validates :name, :format => {:with => /^[A-Za-z0-9_\s]+$/}, :length => {:within => 2..254}, :presence => true
+  validates :remember_employer, :inclusion => {:in => [true, false]}
 
   def self.find_for_twitter_oauth(omniauth, signed_in_resource=nil)
     authentication = UserToken.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])

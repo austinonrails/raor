@@ -1,11 +1,15 @@
 div data-role="fieldcontain"
   fieldset data-role="controlgroup" data-type="horizontal"
-    = form.check_box :employment
-    = form.label :employment, "Looking for Employment"
+    = f.check_box :employment
+    = f.label :employment, "Looking for Employment"
 
-    = form.check_box :employ
-    = form.label :employ, "Looking to Employ"
-
+    = f.check_box :employ
+    = f.label :employ, "Looking to Employ"
 div data-role="fieldcontain"
-  = form.label :shoutout, "Shout-out!"
-  = form.text_field :shoutout
+  = f.label :employer, "Employer (optional)"
+  = f.text_field :employer
+  = f.check_box :remember_employer
+  = f.label :remember_employer, :"data-inline" => true
+div data-role="fieldcontain"
+  = f.label :shoutout, "Shout-out!"
+  = f.text_field :shoutout

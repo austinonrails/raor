@@ -19,6 +19,8 @@ class CheckinsController < ApplicationController
   end
 
   def new
+    @checkin.current_user = current_user
+    @checkin.employer = @checkin.current_user.employer if @checkin.remember_employer
     respond_with(@checkin)
   end
 
@@ -42,6 +44,7 @@ class CheckinsController < ApplicationController
   end
 
   def edit
+    @checkin.current_user = current_user
     respond_with(@checkin)
   end
 

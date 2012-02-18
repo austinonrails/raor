@@ -14,6 +14,7 @@ p
 p
   - if can? :update, @event
     = link_to "Edit", edit_event_path(@event), :method => :get, :"data-role" => "button", :"data-inline" => "true"
+    = link_to "Delete", event_path(@event), :method => :delete, :"data-role" => "button", :"data-inline" => "true"
 
 h3
   | Current checkins

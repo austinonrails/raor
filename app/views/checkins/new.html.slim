@@ -1,7 +1,7 @@
 h2
   | Checkin to #{@event.name}
 = form_for [@event, @checkin] do |form|
-  = render :partial => "form", :locals => {:form => form}
+  = render :partial => "form", :locals => {:f => form}
   p
     button type="submit" class="ui-btn-hidden"
       | Checkin

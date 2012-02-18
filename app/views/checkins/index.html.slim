@@ -1,5 +1,5 @@
 h2
   | Checkins for event "#{@event.name}"
 .event_checkins
-  ul#checkins data-role="listview""
+  ul#checkins data-role="listview"
     = render :partial => "checkin", :collection => @checkins
