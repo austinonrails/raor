@@ -6,6 +6,10 @@
 //= require jquery.mobile.pagination
 //= require_tree
 
+$(document).live("pageinit", function() {
+  $.mobile.ajaxEnabled = true;
+});
+
 $.ajaxPrefilter( function(options, originalOptions, jqXHR) {
     if ( applicationCache &&
         applicationCache.status != applicationCache.UNCACHED &&

@@ -1,0 +1,28 @@
+h2
+  | Sign up
+
+= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f|
+  = devise_error_messages!
+
+  div data-role="fieldcontain"
+    = f.label :name
+    = f.text_field :name
+
+  div data-role="fieldcontain"
+    = f.label :email
+    = f.email_field :email
+
+  div data-role="fieldcontain"
+    = f.label :password
+    = f.password_field :password
+
+  div data-role="fieldcontain"
+    = f.label :password_confirmation
+    = f.password_field :password_confirmation
+
+  div data-role="fieldcontain"
+    = f.submit "Sign up"
+    = hidden_field_tag "user[user_tokens_attributes][0][provider]", @provider
+    = hidden_field_tag "user[user_tokens_attributes][0][uid]", @uid
+
+= render :partial => "devise/shared/links"

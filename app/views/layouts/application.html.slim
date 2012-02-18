@@ -13,6 +13,7 @@ html
       .header data-role="header" data-position="fixed"
         h1
           | RAOR
+        = link_to "Logout", destroy_user_session_path, :method => :delete, :class => "ui-btn-right", :"data-inline" => true, :"data-role" => "button"
       p.notice
         = notice
       p.alert
@@ -20,7 +21,7 @@ html
       = yield
       - if can? :create, Event
         .footer data-role="footer" data-position="fixed"
-          = link_to "Add Event", new_event_path, :method => :get, "data-role" => "button", "data-icon" => "plus"
+          = link_to "Add Event", new_event_path, :"data-role" => "button", :"data-icon" => "plus"
           div style="display: inline-block; float: right;"
             select id="manage_users" data-icon="arrow-u"
               option.hidden value="Manage Users"

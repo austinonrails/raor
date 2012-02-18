@@ -1,12 +1,18 @@
 DOCTYPE html
 html
   head
-    title
-      | Raor
+    = javascript_include_tag "application"
+    = stylesheet_link_tag 'application'
     = csrf_meta_tags
+    script type="text/javascript"
+      | $(document).live("pageinit", function() {$.mobile.ajaxEnabled = false;});
   body
-    p.notice
-      = notice
-    p.alert
-      = alert
-    = yield
+    div#page data-role="page" data-add-back-btn="true"
+      .header data-role="header" data-position="fixed"
+        h1
+          | RAOR
+      p.notice
+        = notice
+      p.alert
+        = alert
+      = yield
