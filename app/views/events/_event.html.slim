@@ -2,6 +2,10 @@ li.event
   - if can? :read, event
     a href="#{event_path(event)}"
       = render :partial => 'content', :locals => {:event => event}
+      - if event.is_checked_in(current_user)
+        p.ui-li-desc Checked In
+    = render :partial => "checkin", :locals => {:event => event}
   - else
     = render :partial => 'content', :locals => {:event => event}
+    = render :partial => "checkin", :locals => {:event => event}
   = link_to("Edit", edit_event_path(event), :method => :get) if can? :update, event

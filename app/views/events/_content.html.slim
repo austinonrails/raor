@@ -4,7 +4,3 @@ p.ui-li-desc
   | Starts at: #{event.start_datetime.localtime}
 p.ui-li-desc
   | Ends at: #{event.end_datetime.localtime}
-- if event.is_checked_in(current_user)
-  p.ui-li-desc Checked In
-- elsif event.active?
-  = link_to "Check In", new_event_checkin_path(event), :"data-role" => "button"

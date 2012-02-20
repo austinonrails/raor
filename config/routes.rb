@@ -53,6 +53,7 @@ Raor::Application.routes.draw do
   # root :to => "welcome#index"
   resources :events do
     resources :checkins
+    get 'carousel'
   end
   resources :admin_users, :controller => "users"
   root :to => "events#index"

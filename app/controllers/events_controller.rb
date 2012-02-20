@@ -2,7 +2,7 @@ class EventsController < ApplicationController
   load_resource :event
   authorize_resource :event, :except => :index
 
-  respond_to :html
+  respond_to :html, :json
 
   def index
     # Must manually authorize due to setting current_user on events
@@ -73,6 +73,25 @@ class EventsController < ApplicationController
           flash[:error] = "Failed to destroy event #{@event.name}"
           render :show
         end
+      end
+    end
+  end
+
+  def carousel
+    @event = Event.find(params[:event_id])
+    if params[:checkin_id]
+      time = @event.checkins.where(:id => params[:checkin_id]).first.created_at
+      @checkins = @event.checkins.order(:created_at).where(:created_at => (time + 1.second)..Time.now).limit(4)
+    else
+      @checkins = @event.checkins.order(:created_at).limit(4)
+    end
+    respond_with(@event) do |format|
+      format.html do
+        render
+      end
+
+      format.json do
+        render :json => @checkins.to_json(:only => [:id, :employer, :employ, :employment, :shoutout], :include => [:user => {:only => [:name]}])
       end
     end
   end

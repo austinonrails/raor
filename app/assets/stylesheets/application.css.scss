@@ -31,3 +31,12 @@ span.employment {
 .hidden {
   display: none;
 }
+
+li.transition {
+  background: -moz-linear-gradient(#FFFF00, #FFFFB2) repeat scroll 0 0 #FFFF00;
+  background-image: -webkit-linear-gradient(#FFFF00 /*{c-body-background-start}*/, #FFFFB2 /*{c-body-background-end}*/);
+  background-image: -moz-linear-gradient(#FFFF00 /*{c-body-background-start}*/, #FFFFB2 /*{c-body-background-end}*/);
+  background-image: -ms-linear-gradient(#FFFF00 /*{c-body-background-start}*/, #FFFFB2 /*{c-body-background-end}*/);
+  background-image: -o-linear-gradient(#FFFF00 /*{c-body-background-start}*/, #FFFFB2 /*{c-body-background-end}*/);
+  background-image: linear-gradient(#FFFF00 /*{c-body-background-start}*/, #FFFFB2 /*{c-body-background-end}*/);
+}

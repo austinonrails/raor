@@ -5,4 +5,4 @@ li.checkin
   - else
     .summary
       = render :partial => 'checkins/content', :locals => {:checkin => checkin}
-  = link_to("Delete", event_checkin_path(@event, checkin), :method => :delete, :confirm => "Are you sure you want to delete this checkin?") if can? :manage, @event
+  = link_to("Delete", event_checkin_path(@event, checkin), :method => :delete, :confirm => "Are you sure you want to delete this checkin?", :"data-icon" => "delete") if can? :manage, @event

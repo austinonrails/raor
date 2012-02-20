@@ -1,0 +1,48 @@
+var data = {};
+
+$.ajaxPollSettings.interval = 5000;
+
+$.ajaxPollSettings.successCondition = function(result) {
+  return result != null; // custom condition goes here.
+};
+
+function addCarouselItem(item) {
+  var li = $("<li class=\"checkin transition\"></li>");
+  var summary = $("<div class=\"summary\"></div>");
+  var title = $("<p class=\"title\"><span class=\"title\">" + item.user.name + ($.trim(item.employer) == "" ? "" : " with ") + item.employer + "<span></p>");
+  var content = $("<p class=\"meta\"><span class=\"shoutout\">" + item.shoutout + "</span></p>");
+  if(item.employment) title.addClass("employment");
+  if(item.employ) title.addClass("employ");
+  summary.append(title);
+  summary.append(content);
+  li.append(summary);
+  li.fadeIn(2000, function() {
+    $(this).removeClass("transition");
+  });
+  $("ul.carousel").append(li);
+}
+
+$(document).live("pageshow", function() {
+  $("ul.carousel").live("updatelayout", function() {
+    var carousel = $("ul.carousel");
+    if(carousel.offset().top + carousel.height() > $(window).height()) {
+      setTimeout("$.mobile.silentScroll(" + carousel.height() + ")", 100);
+    }
+  });
+
+  $.ajaxPoll({
+    url: '<%= event_carousel_path(@event) %>',
+    type: "GET",
+    data: data,
+    dataType: "json",
+    success: function(result) {
+      $.each(result, function(indexInArray, valueOfElement) {
+        data.checkin_id = valueOfElement.id;
+        addCarouselItem(valueOfElement);
+      });
+      if(result.length > 0) {
+        $("ul.carousel").listview("refresh");
+      }
+    }
+  });
+});

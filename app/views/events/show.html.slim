@@ -12,12 +12,12 @@ p
   = link_to "Check In", new_event_checkin_path(@event), :"data-role" => "button", :"data-inline" => "true"
 
 p
+  = link_to "Checkin Carousel", event_carousel_path(@event), :method => :get, :"data-role" => "button", :"data-inline" => "true", :target => "_self"
   - if can? :update, @event
     = link_to "Edit", edit_event_path(@event), :method => :get, :"data-role" => "button", :"data-inline" => "true"
     = link_to "Delete", event_path(@event), :method => :delete, :"data-role" => "button", :"data-inline" => "true"
 
 h3
   | Current checkins
-.event_checkins
-  ul#checkins data-role="listview" data-filter="true" data-split-icon="#{'delete' if can? :manage, @event}"
-    = render :partial => "checkins/checkin", :collection => @event.checkins
+ul.checkins data-role="listview" data-filter="true" data-split-icon="#{'delete' if can? :manage, @event}"
+  = render :partial => "checkins/checkin", :collection => @event.checkins

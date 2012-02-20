@@ -4,7 +4,7 @@
 //= require jquery.mobile
 //= require jquery.mobile.datebox
 //= require jquery.mobile.pagination
-//= require_tree
+//= require_self
 
 $(document).live("pageinit", function() {
   $.mobile.ajaxEnabled = true;
