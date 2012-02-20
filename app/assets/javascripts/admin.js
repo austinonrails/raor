@@ -1,4 +1,4 @@
-$("#page").live('pageinit', function(event) {
+$(".page").live('pageinit', function(event) {
   $("#manage_users").live("change", function() {
     var link = $(this).find("option:selected").val();
     if(link != "Manage Users") {

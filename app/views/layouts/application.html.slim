@@ -9,11 +9,13 @@ html
     = csrf_meta_tags
     meta name="viewport" content="width=device-width, initial-scale=1"
   body
-    div#page data-role="page" data-add-back-btn="true"
+    div.page data-role="page"
       .header data-role="header" data-position="fixed"
+        - back = back_path
+        = link_to "Back", back, :method => :get, :class => "back ui-btn-left", :"data-inline" => true, :"data-role" => "button" unless back.blank?
         h1
           | RAOR
-        = link_to "Logout", destroy_user_session_path, :method => :delete, :class => "ui-btn-right", :"data-inline" => true, :"data-role" => "button"
+        = link_to "Logout", destroy_user_session_path, :method => :delete, :class => "ui-btn-right", :"data-inline" => true, :"data-role" => "button", :target => "_self"
       p.notice
         = notice
       p.alert

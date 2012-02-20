@@ -1,4 +1,4 @@
-ul data-role="listview" data-filter="true"
+ul data-role="listview" data-filter="true" data-split-icon="#{'delete' if can? :manage, User}"
   = render :partial => "user", :collection => @users
 
   - if @users.current_page > 1

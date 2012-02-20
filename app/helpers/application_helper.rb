@@ -25,4 +25,14 @@ module ApplicationHelper
     end
     html
   end
+
+  def back_path
+    if session[:history].include?(request.env['REQUEST_PATH'])
+      index = session[:history].rindex(request.env['REQUEST_PATH'])
+      session[:history] = session[:history][0..index]
+      session[:history][index - 1] if index > 0
+    else
+      session[:history].last
+    end
+  end
 end

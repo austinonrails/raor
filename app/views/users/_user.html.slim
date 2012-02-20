@@ -3,5 +3,5 @@
   li data-role="list-divider"
     = @alpha
 li.user
-  a href="#{edit_admin_user_path(user)}"
-    Name: #{user.name}
+  = link_to("Name: #{user.name}", edit_admin_user_path(user), :method => :get)
+  = link_to("Delete", admin_user_path(user), :method => :delete) if can? :update, user

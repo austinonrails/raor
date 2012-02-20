@@ -24,7 +24,7 @@ class UsersController < ApplicationController
           redirect_to admin_users_path
         else
           flash[:error] = "Failed to create user #{@user.name}"
-          redirect_to new_user_path
+          render :edit
         end
       end
     end
@@ -52,6 +52,16 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    respond_with(@user)
+    respond_with(@user)  do |format|
+      format.html do
+        if @user.destroy
+          flash[:notice] = "Successfully deleted user."
+          redirect_to admin_users_path
+        else
+          flash[:error] = "Error deleting user #{@user.name}."
+          redirect_to admin_users_path
+        end
+      end
+    end
   end
 end
