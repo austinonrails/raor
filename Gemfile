@@ -11,6 +11,9 @@ gem 'pg'
 gem 'devise'
 gem 'omniauth'
 gem "omniauth-twitter"
+gem "omniauth-facebook"
+gem "omniauth-openid"
+gem 'omniauth-github'
 gem 'cancan'
 gem 'will_paginate'
 gem 'date_validator'

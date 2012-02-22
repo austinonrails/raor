@@ -1,4 +1,7 @@
 require 'omniauth-twitter'
+require 'omniauth-facebook'
+require 'omniauth-openid'
+require "openid/store/filesystem"
 
 # Use this hook to configure devise mailer, warden hooks and so forth. The first
 # four configuration values can also be set straight in your models.
@@ -7,7 +10,10 @@ file = File.join(Rails.root,'config','omniauth.yml')
 auth = if File.exists?(file)
   YAML.load(IO.read(file))
 else
-  {:twitter => {:CONSUMER_KEY => ENV['TWITTER_KEY'], :CONSUMER_SECRET => ENV['TWITTER_SECRET']}}
+  {
+    :twitter => {:CONSUMER_KEY => ENV['TWITTER_KEY'], :CONSUMER_SECRET => ENV['TWITTER_SECRET']},
+    :facebook => {:CONSUMER_KEY => ENV['FACEBOOK_KEY'], :CONSUMER_SECRET => ENV['FACEBOOK_SECRET']}
+  }
 end
 
 Devise.setup do |config|
@@ -203,6 +209,10 @@ Devise.setup do |config|
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', :scope => 'user,public_repo'
 
   config.omniauth :twitter, auth[:twitter][:CONSUMER_KEY], auth[:twitter][:CONSUMER_SECRET]
+  config.omniauth :facebook, auth[:facebook][:CONSUMER_KEY], auth[:facebook][:CONSUMER_SECRET]
+  config.omniauth :github, auth[:github][:CONSUMER_KEY], auth[:github][:CONSUMER_SECRET], :scope => 'user,public_repo'
+  config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :require => 'omniauth-openid'
+  #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

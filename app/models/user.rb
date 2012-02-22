@@ -1,12 +1,11 @@
 class User < ActiveRecord::Base
   ROLES = %w[admin moderator author banned]
   
-  devise :database_authenticatable, :registerable,
-       :recoverable, :rememberable, :trackable, :validatable, :omniauthable
-  attr_accessible :api_key, :email, :employer, :name, :password, :password_confirmation, :provider, :remember_employer, :remember_me, :roles, :user, :uid,
+  devise :database_authenticatable, :rememberable, :trackable, :validatable, :omniauthable
+  attr_accessible :api_key, :email, :employer, :name, :provider, :remember_employer, :remember_me, :roles, :user, :uid,
                   :user_tokens_attributes, :as => :default
   attr_accessible :created_at, :current_sign_in_at, :current_sign_in_ip, :email, :employer, :id, :last_sign_in_at, :last_sign_in_ip, :name,
-                  :remember_created_at, :remember_employer, :reset_password_sent_at, :sign_in_count, :updated_at, :user_tokens_attributes, :as => :admin
+                  :remember_created_at, :remember_employer, :sign_in_count, :updated_at, :user_tokens_attributes, :as => :admin
 
   has_many :checkins
   has_many :events, :through => :checkins
@@ -14,7 +13,6 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :user_tokens
 
-  validates :email, :format => { :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i}, :length => {:within => 6..254}, :presence => true, :uniqueness => true
   validates :name, :format => {:with => /^[A-Za-z0-9_\s]+$/}, :length => {:within => 2..254}, :presence => true
   validates :remember_employer, :inclusion => {:in => [true, false]}
 
@@ -23,9 +21,67 @@ class User < ActiveRecord::Base
     if authentication && authentication.user
       authentication.user
     else
-      User.new
-      # In a typical app you would create a new user here:
-      # User.create!(:email => data['email'], :password => Devise.friendly_token[0,20]) 
+      name = omniauth.info.name
+      name = omniauth.info.nickname if name.blank?
+      name = omniauth.extra.screen_name if name.blank?
+      user = (User.find_by_email(omniauth.info.email) if omniauth.info.email) || User.create!(:name => name)
+      if authentication
+        authentication.user = user
+      else
+        UserToken.create!(:uid => omniauth["uid"], :provider => omniauth["provider"], :user => user)
+      end
+      user
+    end
+  end
+
+  def self.find_for_facebook_oauth(omniauth, signed_in_resource=nil)
+    authentication = UserToken.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])
+    if authentication && authentication.user
+      authentication.user
+    else
+      name = omniauth.info.name
+      name = omniauth.info.nickname if name.blank?
+      name = omniauth.extra.screen_name if name.blank?
+      user = (User.find_by_email(omniauth.info.email) if omniauth.info.email) || User.create!(:name => name)
+      if authentication
+        authentication.user = user
+      else
+        UserToken.create!(:uid => omniauth["uid"], :provider => omniauth["provider"], :user => user)
+      end
+      user
+    end
+  end
+
+  def self.find_for_github_oauth(omniauth, signed_in_resource=nil)
+    authentication = UserToken.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'].to_s)
+    if authentication && authentication.user
+      authentication.user
+    else
+      name = omniauth.info.name
+      name = omniauth.info.nickname if name.blank?
+      name = omniauth.extra.screen_name if name.blank?
+      user = (User.find_by_email(omniauth.info.email) if omniauth.info.email) || User.create!(:name => name)
+      if authentication
+        authentication.user = user
+      else
+        UserToken.create!(:uid => omniauth["uid"].to_s, :provider => omniauth["provider"], :user => user)
+      end
+      user
+    end
+  end
+
+  def self.find_for_open_id(omniauth, signed_in_resource=nil)
+    authentication = UserToken.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])
+    if authentication && authentication.user
+      authentication.user
+    else
+      user = User.find_by_email(omniauth.info.email) || User.create!(:name => omniauth.info.name, :email => omniauth.info.email)
+      if authentication
+        authentication.user = user
+      else
+        UserToken.create!(:uid => omniauth["uid"], :provider => omniauth["provider"], :user => user)
+      end
+      user
     end
   end
 
@@ -41,5 +97,14 @@ class User < ActiveRecord::Base
 
   def is?(role)
     roles.include?(role.to_s)
+  end
+
+  protected
+  def password_required?
+    false
+  end
+
+  def email_required?
+    false
   end
 end
