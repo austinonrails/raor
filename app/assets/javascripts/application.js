@@ -3,7 +3,8 @@
 //= require jquery-ui
 //= require jquery.mobile
 //= require jquery.mobile.datebox
-//= require jquery.mobile.pagination
+//= require jquery.mobile.pagination'
+//= require ajaxPoll
 //= require_self
 
 $(document).live("pageinit", function() {
