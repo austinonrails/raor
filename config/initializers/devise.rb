@@ -12,7 +12,8 @@ auth = if File.exists?(file)
 else
   {
     :twitter => {:CONSUMER_KEY => ENV['TWITTER_KEY'], :CONSUMER_SECRET => ENV['TWITTER_SECRET']},
-    :facebook => {:CONSUMER_KEY => ENV['FACEBOOK_KEY'], :CONSUMER_SECRET => ENV['FACEBOOK_SECRET']}
+    :facebook => {:CONSUMER_KEY => ENV['FACEBOOK_KEY'], :CONSUMER_SECRET => ENV['FACEBOOK_SECRET']},
+    :github => {:CONSUMER_KEY => ENV['GIBHUT_KEY'], :CONSUMER_SECRET => ENV['GITHUB_SECRET']}
   }
 end
 
