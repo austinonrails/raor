@@ -11,6 +11,12 @@ $(document).live("pageinit", function() {
   $.mobile.ajaxEnabled = true;
 });
 
+$("a#notice, a#alert").live("tap", function() {
+  $(this).fadeOut(1000, function() {
+    $(this).trigger("updatelayout");
+  });
+});
+
 $.ajaxPrefilter( function(options, originalOptions, jqXHR) {
     if ( applicationCache &&
         applicationCache.status != applicationCache.UNCACHED &&

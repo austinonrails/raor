@@ -1,4 +1,7 @@
+require 'active_support/inflector'
+
 class EventsController < ApplicationController
+  include ActiveSupport::Inflector
   load_resource :event
   authorize_resource :event, :except => :index
 
@@ -38,8 +41,8 @@ class EventsController < ApplicationController
           flash[:notice] = "Successfully created event #{@event.name}"
           redirect_to event_path(@event)
         else
-          flash[:error] = "Failed to create event #{@event.name}"
-          render :edit
+          flash[:alert] = @event.errors.map{|attr, msg| "#{humanize(attr)} #{msg}"}.join("<br />")
+          render :new
         end
       end
     end
@@ -56,8 +59,8 @@ class EventsController < ApplicationController
           flash[:notice] = "Successfully updated event #{@event.name}"
           redirect_to event_path(@event)
         else
-          flash[:error] = "Failed to update event #{@event.name}"
-          render :edit
+          flash[:alert] = "Failed to update event #{@event.name}"
+          redirect_to edit_event_path(@event)
         end
       end
     end
@@ -70,7 +73,7 @@ class EventsController < ApplicationController
           flash[:notice] = "Successfully destroyed event"
           redirect_to events_path
         else
-          flash[:error] = "Failed to destroy event #{@event.name}"
+          flash[:alert] = "Failed to destroy event #{@event.name}"
           render :show
         end
       end

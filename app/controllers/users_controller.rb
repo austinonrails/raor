@@ -23,7 +23,7 @@ class UsersController < ApplicationController
           flash[:notice] = "Successfully created user #{@user.name}"
           redirect_to admin_users_path
         else
-          flash[:error] = "Failed to create user #{@user.name}"
+          flash[:alert] = "Failed to create user #{@user.name}"
           render :edit
         end
       end
@@ -44,7 +44,7 @@ class UsersController < ApplicationController
           flash[:notice] = "Successfully updated user #{@user.name}"
           redirect_to admin_users_path
         else
-          flash[:error] = "Failed to update user #{@user.name}"
+          flash[:alert] = "Failed to update user #{@user.name}"
           redirect_to edit_admin_user_path(@user)
         end
       end
@@ -58,7 +58,7 @@ class UsersController < ApplicationController
           flash[:notice] = "Successfully deleted user."
           redirect_to admin_users_path
         else
-          flash[:error] = "Error deleting user #{@user.name}."
+          flash[:alert] = "Error deleting user #{@user.name}."
           redirect_to admin_users_path
         end
       end

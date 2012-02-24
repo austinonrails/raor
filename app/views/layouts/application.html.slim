@@ -17,13 +17,18 @@ html
         h1
           | RAOR
         = link_to "Logout", destroy_user_session_path, :method => :delete, :class => "ui-btn-right", :"data-inline" => true, :"data-role" => "button", :target => "_self"
-      p.notice
-        = notice
-      p.alert
-        = alert
+      - if notice
+        = link_to notice, "#", :id => "notice", :"data-role" => "button", :"data-icon" => "delete", :"data-iconpos" => "right"
+      - if alert
+        = link_to alert, "#", :id => "alert", :"data-role" => "button", :"data-icon" => "delete", :"data-iconpos" => "right"
       = yield
       - if can? :create, Event
         .footer data-role="footer" data-position="fixed"
-          = link_to "Add Event", new_event_path, :"data-role" => "button", :"data-inline" => true, :"data-role" => "button", :"data-icon" => "plus"
-          = link_to "List Users", admin_users_path, :class => "ui-btn-right", :"data-inline" => true, :"data-role" => "button", :"data-icon" => "arrow-u"
-          = link_to "Add User", new_admin_user_path, :class => "ui-btn-right", :"data-inline" => true, :"data-role" => "button", :"data-icon" => "plus"
+          .navbar data-role="navbar"
+            ul
+              li
+                = link_to "Add Event", new_event_path
+              li
+                = link_to "List Users", admin_users_path
+              li
+                = link_to "Add User", new_admin_user_path

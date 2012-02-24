@@ -36,7 +36,7 @@ class CheckinsController < ApplicationController
           flash[:notice] = "Successfully checked in to #{@event.name}"
           redirect_to event_path(@event)
         else
-          flash[:error] = "Failed to check in to #{@event.name}"
+          flash[:alert] = "Failed to check in to #{@event.name}"
           redirect_to event_path(@event)
         end
       end
@@ -57,7 +57,7 @@ class CheckinsController < ApplicationController
             flash[:notice] = "Successfully updated checkin status for #{@checkin.event.name}"
             redirect_to event_path(@checkin.event)
           else
-            flash[:error] = "Failed to update checkin status"
+            flash[:alert] = "Failed to update checkin status"
             redirect_to new_event_path
           end
         else
@@ -65,7 +65,7 @@ class CheckinsController < ApplicationController
             flash[:notice] = "Successfully checked in to event #{@event.name}"
             redirect_to event_path(@event)
           else
-            flash[:error] = "Failed to check in to event #{@event.name}"
+            flash[:alert] = "Failed to check in to event #{@event.name}"
             redirect_to new_event_path
           end
         end
@@ -82,7 +82,7 @@ class CheckinsController < ApplicationController
           flash[:notice] = "Successfully destroyed checkin for #{name}"
           redirect_to event_path(@event)
         else
-          flash[:error] = "Failed to destroy checkin for #{name}"
+          flash[:alert] = "Failed to destroy checkin for #{name}"
         end
       end
     end

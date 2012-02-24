@@ -8,7 +8,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if @user
         sign_in_and_redirect @user, :event => :authentication
       else
-        flash[:error] = "Unknown error while attempting to sign in via Twitter credentials"
+        flash[:alert] = "Unknown error while attempting to sign in via Twitter credentials"
         redirect_to new_user_session_path
       end
     end
@@ -23,7 +23,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if @user
         sign_in_and_redirect @user, :event => :authentication
       else
-        flash[:error] = "Unknown error while attempting to sign in via Facebook credentials"
+        flash[:alert] = "Unknown error while attempting to sign in via Facebook credentials"
         redirect_to new_user_session_path
       end
     end
@@ -38,7 +38,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if @user
         sign_in_and_redirect @user, :event => :authentication
       else
-        flash[:error] = "Unknown error while attempting to sign in via Github credentials"
+        flash[:alert] = "Unknown error while attempting to sign in via Github credentials"
         redirect_to new_user_session_path
       end
     end
@@ -53,7 +53,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if @user
         sign_in_and_redirect @user, :event => :authentication
       else
-        flash[:error] = "Unknown error while attempting to sign in via OpenID credentials"
+        flash[:alert] = "Unknown error while attempting to sign in via OpenID credentials"
         session["devise.open:id_data"] = env["openid.ext1"]
         redirect_to new_user_session_path
       end
@@ -70,7 +70,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if @user
         sign_in_and_redirect @user, :event => :authentication
       else
-        flash[:error] = "Unknown error while attempting to sign in via OpenID credentials"
+        flash[:alert] = "Unknown error while attempting to sign in via OpenID credentials"
         session["devise.google_data"] = request.env["omniauth.auth"]
         redirect_to new_user_session_path
       end
