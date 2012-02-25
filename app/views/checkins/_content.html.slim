@@ -1,6 +1,11 @@
 p.title
-  span.title class="#{' employment' if checkin.employment}#{' employ' if checkin.employ}"
+  span.title
     = checkin.employer.blank? ? checkin.user.name : "#{checkin.user.name} with #{checkin.employer}"
-p.meta
-  span.shoutout
-    = checkin.shoutout
+    - unless checkin.employ.blank?
+      span.ui-li-count
+        | Looking To Hire
+    - unless checkin.employment.blank?
+      span.ui-li-count
+        | Looking For Work
+p.shoutout
+  = checkin.shoutout

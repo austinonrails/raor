@@ -4,32 +4,26 @@
  *= require jquery.mobile.datebox
  */
 
-@mixin span-title {
+span.title {
   font-size: 15px;
   font-weight: bold;
   color: #333;
-  display: block;
-  float: left;
-  padding-left: 26px;
-}
 
-span.title {
-  @include span-title;
-  background: url(images/status_unknown.png) no-repeat 0 2px;
-}
-
-span.employ {
-  @include span-title;
-  background: url(images/lf1m.png) no-repeat 0 2px;
-}
-
-span.employment {
-  @include span-title;
-  background: url(images/lfw.png) no-repeat 0 2px;
+  span.ui-li-count {
+    position: static;
+    margin-top: 0em;
+    margin-left: 1em;
+  }
 }
 
 .hidden {
   display: none;
+}
+
+li.event {
+  background: -moz-linear-gradient(center bottom, rgba(253, 253, 253, .5) 0%, rgba(238, 238, 238, .5) 100%) no-repeat fixed;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(1, rgba(253,253,253,0.5)), color-stop(0, rgba(238,238,238,0.5))) no-repeat fixed;
+  background-image: -moz-linear-gradient(center bottom, rgba(253, 253, 253, .5) 0%, rgba(238, 238, 238, .5) 100%) no-repeat fixed;
 }
 
 li.transition {
@@ -39,4 +33,8 @@ li.transition {
   background-image: -ms-linear-gradient(#FFFF00 /*{c-body-background-start}*/, #FFFFB2 /*{c-body-background-end}*/);
   background-image: -o-linear-gradient(#FFFF00 /*{c-body-background-start}*/, #FFFFB2 /*{c-body-background-end}*/);
   background-image: linear-gradient(#FFFF00 /*{c-body-background-start}*/, #FFFFB2 /*{c-body-background-end}*/);
+}
+
+.ui-page {
+  background: url(/images/aorlogo.png) center no-repeat ;
 }
