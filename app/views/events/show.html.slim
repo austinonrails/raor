@@ -3,9 +3,9 @@ h2
 p
   = @event.description
 p
-  | Starts at: #{@event.start_datetime.localtime}
+  | Starts at: #{@event.start_datetime.localtime.strftime("%A %B %e, %Y %l:%M %p").squeeze(" ")}
 p
-  | Ends at: #{@event.end_datetime.localtime}
+  | Ends at: #{@event.end_datetime.localtime.strftime("%A %B %e, %Y %l:%M %p").squeeze(" ")}
 - if @event.is_checked_in(current_user)
   | Checked In
 - elsif @event.active?

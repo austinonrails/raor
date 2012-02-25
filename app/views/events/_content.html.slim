@@ -1,6 +1,6 @@
 h3.ui-li-heading
   = event.name
 p.ui-li-desc
-  | Starts at: #{event.start_datetime.localtime}
+  | Starts at: #{event.start_datetime.localtime.strftime("%A %B %e, %Y %l:%M %p").squeeze(" ")}
 p.ui-li-desc
-  | Ends at: #{event.end_datetime.localtime}
+  | Ends at: #{event.end_datetime.localtime.strftime("%A %B %e, %Y %l:%M %p").squeeze(" ")}
