@@ -42,7 +42,6 @@ class EventsController < ApplicationController
           redirect_to event_path(@event)
         else
           flash[:alert] = @event.errors.map{|attr, msg| "#{humanize(attr)} #{msg}"}.join("<br />")
-          flash[:notice] = @event.start_datetime.to_s
           render :new
         end
       end
