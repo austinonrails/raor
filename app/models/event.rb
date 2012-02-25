@@ -41,7 +41,7 @@ class Event < ActiveRecord::Base
   end
 
   def start_date=(value)
-    self.start_datetime = Time.parse("#{value} #{self.start_datetime.localtime.strftime('%I:%M %p') if self.start_datetime}")
+    self.start_datetime = Time.zone.parse("#{value} #{self.start_datetime.localtime.strftime('%I:%M %p') if self.start_datetime}")
   end
 
   def start_time
@@ -49,7 +49,7 @@ class Event < ActiveRecord::Base
   end
 
   def start_time=(value)
-    self.start_datetime = Time.parse("#{self.start_datetime ? self.start_datetime.localtime.to_date.to_s : Time.now.to_date.to_s} #{value}")
+    self.start_datetime = Time.zone.parse("#{self.start_datetime ? self.start_datetime.localtime.to_date.to_s : Time.now.to_date.to_s} #{value}")
   end
 
   def end_date
@@ -57,7 +57,7 @@ class Event < ActiveRecord::Base
   end
 
   def end_date=(value)
-    self.end_datetime = Time.parse("#{value} #{self.end_datetime.localtime.strftime('%I:%M %p') if self.end_datetime}")
+    self.end_datetime = Time.zone.parse("#{value} #{self.end_datetime.localtime.strftime('%I:%M %p') if self.end_datetime}")
   end
 
   def end_time
@@ -65,6 +65,6 @@ class Event < ActiveRecord::Base
   end
 
   def end_time=(value)
-    self.end_datetime = Time.parse("#{self.end_datetime ? self.end_datetime.localtime.to_date.to_s : Time.now.to_date.to_s} #{value}")
+    self.end_datetime = Time.zone.parse("#{self.end_datetime ? self.end_datetime.localtime.to_date.to_s : Time.now.to_date.to_s} #{value}")
   end
 end
