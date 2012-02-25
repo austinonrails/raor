@@ -1,4 +1,5 @@
 class Event < ActiveRecord::Base
+  include ActionView::Helpers::DateHelper
   has_many :checkins
   belongs_to :creator, :class_name => "User"
   has_many :users, :through => :checkins
@@ -13,7 +14,7 @@ class Event < ActiveRecord::Base
   validates :name, :format => {:with => /^[\x20-\x7E]+$/}, :length => {:within => 2..254}, :presence => true
   validates :description, :format => {:with => /^[\x20-\x7E]*$/}, :length => {:within => 0..254}
   validates :start_datetime, :date => {:before => :end_datetime}
-  validates :start_datetime, :date => {:after => Time.zone.now}, :on => :create
+  validates :start_datetime, :date => {:after => (Time.zone.now - 5.minutes)}, :on => :create
   validates :end_datetime, :date => {:after => :start_datetime}
 
   def active?
