@@ -24,10 +24,9 @@
                 //complete = true;
 
                 if (options.successCallback)
-                    options.successCallback(data, textStatus);
+                    $.proxy(options.successCallback(data, textStatus), this);
 
-                if(complete || self.complete)
-                  return;
+                if(complete || this.completed) return;
             }
 
             var wait = null;

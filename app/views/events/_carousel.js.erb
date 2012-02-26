@@ -36,6 +36,7 @@ $(document).live("pageshow", function() {
     data: data,
     dataType: "json",
     success: function(result) {
+      this.completed = $(".page[data-url='<%= event_carousel_path(@event) %>']:visible").length == 0;
       $.each(result, function(indexInArray, valueOfElement) {
         data.checkin_id = valueOfElement.id;
         addCarouselItem(valueOfElement);
