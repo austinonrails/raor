@@ -23,6 +23,13 @@ class EventsController < ApplicationController
 
   def show
     @event.current_user = current_user
+    @checkins = if params[:work]
+      @event.checkins.employment
+    elsif params[:hire]
+      @event.checkins.employ
+    else
+      @event.checkins
+    end
 
     respond_with(@event)
   end

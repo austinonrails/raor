@@ -10,6 +10,8 @@ class Checkin < ActiveRecord::Base
 
   scope :hidden, :conditions => ["checkins.hidden = ?", true]
   scope :unhidden, :conditions => ["checkins.hidden = ?", false]
+  scope :employ, :conditions => ["checkins.employ = ?", true]
+  scope :employment, :conditions => ["checkins.employment = ?", true]
 
   validates :employ, :inclusion => {:in => [true, false]}
   validates :employment, :inclusion => {:in => [true, false]}

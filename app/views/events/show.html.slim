@@ -19,5 +19,9 @@ p
 
 h3
   | Current checkins
+div data-role="controlgroup" data-type="horizontal"
+  = link_to "Looking for Work", event_path(@event, :work => true), :"data-role" => "button", :class => "#{'ui-btn-active' if params[:work]}"
+  = link_to "All", event_path(@event), :"data-role" => "button", :class => "#{'ui-btn-active' unless params[:hire] || params[:work]}"
+  = link_to "Looking to Hire", event_path(@event, :hire => true), :"data-role" => "button", :class => "#{'ui-btn-active' if params[:hire]}"
 ul.checkins data-role="listview" data-filter="true" data-split-icon="#{'delete' if can? :manage, @event}"
-  = render :partial => "checkins/checkin", :collection => @event.checkins
+  = render :partial => "checkins/checkin", :collection => @checkins
