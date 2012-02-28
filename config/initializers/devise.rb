@@ -13,7 +13,7 @@ else
   {
     :twitter => {:CONSUMER_KEY => ENV['TWITTER_KEY'], :CONSUMER_SECRET => ENV['TWITTER_SECRET']},
     :facebook => {:CONSUMER_KEY => ENV['FACEBOOK_KEY'], :CONSUMER_SECRET => ENV['FACEBOOK_SECRET']},
-    :github => {:CONSUMER_KEY => ENV['GIBHUT_KEY'], :CONSUMER_SECRET => ENV['GITHUB_SECRET']}
+    :github => {:CONSUMER_KEY => ENV['GITHUB_KEY'], :CONSUMER_SECRET => ENV['GITHUB_SECRET']}
   }
 end
 
@@ -210,7 +210,7 @@ Devise.setup do |config|
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', :scope => 'user,public_repo'
 
   config.omniauth :twitter, auth[:twitter][:CONSUMER_KEY], auth[:twitter][:CONSUMER_SECRET]
-  config.omniauth :facebook, auth[:facebook][:CONSUMER_KEY], auth[:facebook][:CONSUMER_SECRET]
+  #config.omniauth :facebook, auth[:facebook][:CONSUMER_KEY], auth[:facebook][:CONSUMER_SECRET]
   config.omniauth :github, auth[:github][:CONSUMER_KEY], auth[:github][:CONSUMER_SECRET], :scope => 'user,public_repo'
   config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :require => 'omniauth-openid'
   #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'
