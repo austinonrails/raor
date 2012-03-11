@@ -23,7 +23,7 @@ class Event < ActiveRecord::Base
   end
 
   def active?
-    now = Time.now.localtime
+    now = Time.zone.now
     self.end_datetime > now && self.start_datetime <= now
   end
 
@@ -42,34 +42,34 @@ class Event < ActiveRecord::Base
   end
 
   def start_date
-    self.start_datetime.localtime.to_date if self.start_datetime
+    self.start_datetime.to_date if self.start_datetime
   end
 
   def start_date=(value)
-    self.start_datetime = Time.parse("#{value} #{self.start_datetime.localtime.strftime('%I:%M %p') if self.start_datetime}")
+    self.start_datetime = Time.zone.parse("#{value} #{self.start_datetime.strftime('%I:%M %p') if self.start_datetime}")
   end
 
   def start_time
-    self.start_datetime.localtime.strftime('%I:%M %p') if self.start_datetime
+    self.start_datetime.strftime('%I:%M %p') if self.start_datetime
   end
 
   def start_time=(value)
-    self.start_datetime = Time.parse("#{self.start_datetime ? self.start_datetime.localtime.to_date.to_s : Time.zone.now.today.to_s} #{value} #{Time.zone.now.strftime('%:z')}")
+    self.start_datetime = Time.zone.parse("#{self.start_datetime ? self.start_datetime.to_date.to_s : Time.zone.now.today.to_s} #{value} #{Time.zone.now.zone}")
   end
 
   def end_date
-    self.end_datetime.localtime.to_date if self.end_datetime
+    self.end_datetime.to_date if self.end_datetime
   end
 
   def end_date=(value)
-    self.end_datetime = Time.parse("#{value} #{self.end_datetime.localtime.strftime('%I:%M %p') if self.end_datetime}")
+    self.end_datetime = Time.zone.parse("#{value} #{self.end_datetime.strftime('%I:%M %p') if self.end_datetime}")
   end
 
   def end_time
-    self.end_datetime.localtime.strftime('%I:%M %p') if self.end_datetime
+    self.end_datetime.strftime('%I:%M %p') if self.end_datetime
   end
 
   def end_time=(value)
-    self.end_datetime = Time.parse("#{self.end_datetime ? self.end_datetime.localtime.to_date.to_s : Time.zone.now.today.to_s} #{value} #{Time.zone.now.strftime('%:z')}")
+    self.end_datetime = Time.zone.parse("#{self.end_datetime ? self.end_datetime.to_date.to_s : Time.zone.now.today.to_s} #{value} #{Time.zone.now.zone}")
   end
 end
