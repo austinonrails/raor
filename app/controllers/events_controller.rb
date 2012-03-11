@@ -48,6 +48,7 @@ class EventsController < ApplicationController
           flash[:notice] = "Successfully created event #{@event.name}"
           redirect_to event_path(@event)
         else
+          flash[:notice] = "SD: #{@event.start_datetime} ED: #{@event.end_datetime}"
           flash[:alert] = @event.errors.map{|attr, msg| "#{humanize(attr)} #{msg}"}.join("<br />")
           render :new
         end
@@ -66,6 +67,7 @@ class EventsController < ApplicationController
           flash[:notice] = "Successfully updated event #{@event.name}"
           redirect_to event_path(@event)
         else
+          flash[:notice] = "SD: #{@event.start_datetime} ED: #{@event.end_datetime}"
           flash[:alert] = "Failed to update event #{@event.name}"
           redirect_to edit_event_path(@event)
         end
