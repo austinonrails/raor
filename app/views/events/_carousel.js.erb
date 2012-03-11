@@ -9,10 +9,16 @@ $.ajaxPollSettings.successCondition = function(result) {
 function addCarouselItem(item) {
   var li = $("<li class=\"checkin transition\"></li>");
   var summary = $("<div class=\"summary\"></div>");
-  var title = $("<p class=\"title\"><span class=\"title\">" + item.user.name + ($.trim(item.employer) == "" ? "" : " with ") + item.employer + "<span></p>");
+  var title_span = $("<span class=\"title\">" + item.user.name + ($.trim(item.employer) == "" ? "" : " with ") + item.employer + "</span>");
+  if(item.employment) {
+    title_span.append($("<span class=\"ui-li-count\">Looking For Work</span>"));
+  }
+  if(item.employ) {
+    title_span.append($("<span class=\"ui-li-count\">Looking To Hire</span>"));
+  }
+  var title = $("<p class=\"title ui-li-desc\"></p>");
+  title.append(title_span);
   var content = $("<p class=\"meta\"><span class=\"shoutout\">" + item.shoutout + "</span></p>");
-  if(item.employment) title.addClass("employment");
-  if(item.employ) title.addClass("employ");
   summary.append(title);
   summary.append(content);
   li.append(summary);
