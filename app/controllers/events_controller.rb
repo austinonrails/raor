@@ -93,7 +93,7 @@ class EventsController < ApplicationController
     @event = Event.find(params[:event_id])
     if params[:checkin_id]
       time = @event.checkins.where(:id => params[:checkin_id]).first.created_at
-      @checkins = @event.checkins.order(:created_at).where(:created_at => (time + 1.second)..Time.now).limit(4)
+      @checkins = @event.checkins.order(:created_at).where(:created_at => (time + 1.second)..Time.zone.now).limit(4)
     else
       @checkins = @event.checkins.order(:created_at).limit(4)
     end

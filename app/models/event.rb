@@ -42,7 +42,7 @@ class Event < ActiveRecord::Base
   end
 
   def start_date
-    self.start_datetime.to_date if self.start_datetime
+    self.start_datetime.to_date.to_s if self.start_datetime
   end
 
   def start_date=(value)
@@ -54,11 +54,11 @@ class Event < ActiveRecord::Base
   end
 
   def start_time=(value)
-    self.start_datetime = Time.zone.parse("#{self.start_datetime ? self.start_datetime.to_date.to_s : Time.zone.now.today.to_s} #{value} #{Time.zone.now.zone}")
+    self.start_datetime = Time.zone.parse("#{self.start_datetime ? self.start_datetime.to_date.to_s : Time.zone.now.to_date.to_s} #{value} #{Time.zone.now.zone}")
   end
 
   def end_date
-    self.end_datetime.to_date if self.end_datetime
+    self.end_datetime.to_date.to_s if self.end_datetime
   end
 
   def end_date=(value)
@@ -70,6 +70,6 @@ class Event < ActiveRecord::Base
   end
 
   def end_time=(value)
-    self.end_datetime = Time.zone.parse("#{self.end_datetime ? self.end_datetime.to_date.to_s : Time.zone.now.today.to_s} #{value} #{Time.zone.now.zone}")
+    self.end_datetime = Time.zone.parse("#{self.end_datetime ? self.end_datetime.to_date.to_s : Time.zone.now.to_date.to_s} #{value} #{Time.zone.now.zone}")
   end
 end
