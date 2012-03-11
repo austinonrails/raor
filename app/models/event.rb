@@ -11,7 +11,7 @@ class Event < ActiveRecord::Base
   validates :name, :format => {:with => /^[\x20-\x7E]+$/}, :length => {:within => 2..254}, :presence => true
   validates :description, :format => {:with => /^[\x20-\x7E]*$/}, :length => {:within => 0..254}
   validates :start_datetime, :date => {:before => :end_datetime}
-  validates :start_datetime, :date => {:after => Proc.new {Time.now - 5.minutes}}, :on => :create
+  validates :start_datetime, :date => {:after => Proc.new {Time.zone.now - 5.minutes}}, :on => :create
   validates :end_datetime, :date => {:after => :start_datetime}
 
   def self.active
