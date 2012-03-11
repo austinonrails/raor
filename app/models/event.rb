@@ -8,14 +8,19 @@ class Event < ActiveRecord::Base
   attr_accessible :description, :end_date, :end_time, :name, :start_date, :start_time, :as => :default
   attr_accessible :created_at, :creator_id, :description, :end_date, :end_time, :id, :name, :start_date, :start_time, :updated_at, :as => :admin
 
-  scope :active, :conditions => ["events.end_date > ? AND events.start_date <= ?", lambda{Time.zone.now}, lambda{Time.zone.now}]
-  scope :current, :conditions => "events.end_date >= (SELECT date('now'))", :order => "events.end_date ASC"
-
   validates :name, :format => {:with => /^[\x20-\x7E]+$/}, :length => {:within => 2..254}, :presence => true
   validates :description, :format => {:with => /^[\x20-\x7E]*$/}, :length => {:within => 0..254}
   validates :start_datetime, :date => {:before => :end_datetime}
-  validates :start_datetime, :date => {:after => lambda{Time.zone.now - 5.minutes}}, :on => :create
+  validates :start_datetime, :date => {:after => Proc.new {Time.zone.now - 5.minutes}}, :on => :create
   validates :end_datetime, :date => {:after => :start_datetime}
+
+  def self.active
+    where("\"events\".\"end_datetime\" > ? AND \"events\".\"start_datetime\" <= ?", Time.zone.now, Time.zone.now)
+  end
+
+  def self.current
+    where("\"events\".\"end_datetime\" >= ?", Time.zone.now).order("\"events\".\"end_datetime\" ASC")
+  end
 
   def active?
     now = Time.now.localtime
