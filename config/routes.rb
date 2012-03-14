@@ -54,6 +54,7 @@ Raor::Application.routes.draw do
   resources :events do
     resources :checkins
     get 'carousel'
+    get 'rafflr'
   end
   resources :admin_users, :controller => "users"
   root :to => "events#index"

@@ -98,13 +98,19 @@ class EventsController < ApplicationController
       @checkins = @event.checkins.order(:created_at).limit(4)
     end
     respond_with(@event) do |format|
-      format.html do
-        render
-      end
+      format.html
 
       format.json do
         render :json => @checkins.to_json(:only => [:id, :employer, :employ, :employment, :shoutout], :include => [:user => {:only => [:name]}])
       end
+    end
+  end
+
+  def rafflr
+    @event = Event.find(params[:event_id])
+    @checkins = @event.checkins
+    respond_with(@event) do |format|
+      format.html
     end
   end
 end

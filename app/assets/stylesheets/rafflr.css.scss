@@ -1,0 +1,23 @@
+.title {
+  text-align: center;
+  span {
+    font-family: "Verdana";
+    font-size: 200%;
+    font-weight: bold;
+  }
+}
+
+.controls {
+  float: right;
+}
+
+rect {
+  stroke: white;
+  fill: steelblue;
+}
+
+text {
+  font-family: "Verdana";
+  font-size: "55";
+  fill: "white";
+}

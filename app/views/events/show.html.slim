@@ -13,6 +13,8 @@ p
 
 p
   = link_to "Checkin Carousel", event_carousel_path(@event), :method => :get, :"data-role" => "button", :"data-inline" => "true", :target => "_self"
+  = link_to "Rafflr", event_rafflr_path(@event), :method => :get, :"data-role" => "button", :"data-inline" => "true", :target => "_self"
+p
   - if can? :update, @event
     = link_to "Edit", edit_event_path(@event), :method => :get, :"data-role" => "button", :"data-inline" => "true"
     = link_to "Delete", event_path(@event), :method => :delete, :"data-role" => "button", :"data-inline" => "true"

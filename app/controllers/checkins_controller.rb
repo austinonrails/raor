@@ -2,7 +2,7 @@ class CheckinsController < ApplicationController
   load_and_authorize_resource :event
   load_and_authorize_resource :checkin, :through => :event
 
-  respond_to :html
+  respond_to :html, :json
 
   def index
     case as_what?
@@ -11,7 +11,13 @@ class CheckinsController < ApplicationController
         @checkins = Checkin.unhidden
     end
 
-    respond_with(@event, @checkins)
+    respond_with(@event, @checkins) do |format|
+      format.html
+
+      format.json do
+        render :json => @checkins, :include => :user
+      end
+    end
   end
 
   def show

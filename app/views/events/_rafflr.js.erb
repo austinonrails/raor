@@ -1,0 +1,25 @@
+$(document).ready(function() {
+  var started = false;
+
+  $("button.start").click(function() {
+    if(started) {
+      location.reload(true);
+    } else {
+      var winners = parseInt($(".winners").val());
+
+      if(winners && winners > 0) {
+        started = true;
+        var rafflr = $("body").rafflr({
+          url: "<%= event_checkins_path(@event, :format => :json) %>",
+          winners: winners
+        });
+
+        $(this).html("Stop");
+
+        rafflr.data("rafflr").start();
+      } else {
+        alert("Please enter a valid number of winners.");
+      }
+    }
+  })
+});

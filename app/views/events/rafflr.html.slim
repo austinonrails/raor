@@ -1,0 +1,14 @@
+- content_for :javascript do
+  = javascript_include_tag "d3.v2", "rafflr"
+  script type="text/javascript"
+    - with_format('js') do
+      = render :partial => "rafflr"
+.title
+  span
+    | Rafflr 2.0
+  .controls
+    label for="winners"
+      | Winners:
+    input.winners type="number" name="winners" size="3" value="3" data-role="none"
+    button.start data-inline="true" data-role="none"
+      | Start
