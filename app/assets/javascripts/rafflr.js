@@ -31,17 +31,17 @@
       });
 
       // Uncomment to add more names to the data
-//      self.data = self.data.concat([
-//        {id: 2, name: "Bob Jones"},
-//        {id: 3, name: "Nancy Reed"},
-//        {id: 4, name: "Larry David"},
-//        {id: 5, name: "George Foreman"},
-//        {id: 6, name: "Barry Lither"},
-//        {id: 7, name: "Cary Grant"},
-//        {id: 8, name: "Penelope Cruz"},
-//        {id: 9, name: "Steven Segal"},
-//        {id: 10, name: "Rasputin"}
-//      ]);
+      self.data = self.data.concat([
+        {id: 2, name: "Bob Jones"},
+        {id: 3, name: "Nancy Reed"},
+        {id: 4, name: "Larry David"},
+        {id: 5, name: "George Foreman"},
+        {id: 6, name: "Barry Lither"},
+        {id: 7, name: "Cary Grant"},
+        {id: 8, name: "Penelope Cruz"},
+        {id: 9, name: "Steven Segal"},
+        {id: 10, name: "Rasputin"}
+      ]);
 
       var divElem = d3.select(".page");
 
