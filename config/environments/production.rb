@@ -43,7 +43,7 @@ Raor::Application.configure do
   # config.action_controller.asset_host = "http://assets.example.com"
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-  config.assets.precompile += %w( admin.js, d3.v2.js )
+  config.assets.precompile += %w( admin.js d3.v2.js )
   config.assets.js_compressor  = :uglifier
   config.assets.css_compressor = :scss
 
