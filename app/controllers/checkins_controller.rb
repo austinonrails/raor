@@ -1,4 +1,5 @@
 class CheckinsController < ApplicationController
+  before_filter lambda{params[:id] = params[:checkin_id]}, :only => :rafflr
   load_and_authorize_resource :event
   load_and_authorize_resource :checkin, :through => :event
 
@@ -93,6 +94,21 @@ class CheckinsController < ApplicationController
           redirect_to event_path(@event)
         else
           flash[:alert] = "Failed to destroy checkin for #{name}"
+        end
+      end
+    end
+  end
+
+  def rafflr
+    @checkin.current_user = current_user
+    respond_with(@event, @checkin) do |format|
+      format.html do
+        if @checkin.update_attributes(:rafflr => true)
+          flash[:notice] = "Successfully updated checkin status for #{@checkin.event.name}"
+          redirect_to event_path(@event)
+        else
+          flash[:alert] = "Failed to update checkin status"
+          redirect_to new_event_path
         end
       end
     end

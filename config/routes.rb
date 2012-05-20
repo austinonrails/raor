@@ -52,7 +52,9 @@ Raor::Application.routes.draw do
   # just remember to delete public/index.html.
   # root :to => "welcome#index"
   resources :events do
-    resources :checkins
+    resources :checkins do
+      get 'rafflr'
+    end
     get 'carousel'
     get 'rafflr'
   end

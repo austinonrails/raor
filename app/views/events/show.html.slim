@@ -13,7 +13,7 @@ p
 - if @event.is_in_rafflr(current_user)
   | Entered in to Rafflr
 - elsif @event.active? && @event.is_checked_in(current_user)
-  = link_to "Enter in to Rafflr", "#{event_checkin_path(@event, @event.checkins.find_by_user_id(current_user.id))}?checkin[rafflr]=true", :method => :put, :target => "_self", :"data-role" => "button", :"data-inline" => "true"
+  = link_to "Enter in to Rafflr", event_checkin_rafflr_path(@event, @event.checkins.find_by_user_id(current_user.id)), :target => "_self", :"data-role" => "button", :"data-inline" => "true"
 
 p
   = link_to "Checkin Carousel", event_carousel_path(@event), :method => :get, :"data-role" => "button", :"data-inline" => "true", :target => "_self"
