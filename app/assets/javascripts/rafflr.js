@@ -31,17 +31,17 @@
       });
 
       // Uncomment to add more names to the data
-      self.data = self.data.concat([
-        {id: 2, name: "Bob Jones"},
-        {id: 3, name: "Nancy Reed"},
-        {id: 4, name: "Larry David"},
-        {id: 5, name: "George Foreman"},
-        {id: 6, name: "Barry Lither"},
-        {id: 7, name: "Cary Grant"},
-        {id: 8, name: "Penelope Cruz"},
-        {id: 9, name: "Steven Segal"},
-        {id: 10, name: "Rasputin"}
-      ]);
+//      self.data = self.data.concat([
+//        {id: 20000, name: "Bob Jones"},
+//        {id: 20001, name: "Nancy Reed"},
+//        {id: 20002, name: "Larry David"},
+//        {id: 20003, name: "George Foreman"},
+//        {id: 20004, name: "Barry Lither"},
+//        {id: 20005, name: "Cary Grant"},
+//        {id: 20006, name: "Penelope Cruz"},
+//        {id: 20007, name: "Steven Segal"},
+//        {id: 20008, name: "Rasputin"}
+//      ]);
 
       var divElem = d3.select(".page");
 
@@ -141,13 +141,13 @@
     _bootLosers: function() {
       var self = this;
       var selection = self.svg.selectAll("g");
-      // Set bounding box property so we know what the text size is
 
+      // Set bounding box property so we know what the text size is
       self.svg.selectAll("g").each(function(d, i) {
         d.bbox = this.getBBox();
       });
 
-      self.data.splice(Math.floor(Math.random() * selection[0].length), 1);
+      self.data.splice(Math.floor(Math.random() * self.data.length), 1);
       selection.data(self.data, function(d) { return d.id; })
         .exit()
         .transition()
@@ -174,6 +174,8 @@
       }));
 
       var scale = 2;
+
+      $("button.start").html("Restart");
 
       self.data = _.shuffle(self.data);
       selection.sort(function(a, b) {
