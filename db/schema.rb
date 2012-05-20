@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120222053740) do
+ActiveRecord::Schema.define(:version => 20120520052247) do
 
   create_table "checkins", :force => true do |t|
     t.integer  "event_id"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(:version => 20120222053740) do
     t.string   "shoutout"
     t.boolean  "hidden",     :default => false, :null => false
     t.string   "employer"
+    t.boolean  "rafflr"
   end
 
   create_table "events", :force => true do |t|

@@ -11,6 +11,10 @@ class CheckinsController < ApplicationController
         @checkins = Checkin.unhidden
     end
 
+    if params[:rafflr] == "true"
+      @checkins = @checkins.rafflr
+    end
+
     respond_with(@event, @checkins) do |format|
       format.html
 
@@ -61,7 +65,7 @@ class CheckinsController < ApplicationController
         if params[:checkin]
           if @checkin.update_attributes(params[:checkin])
             flash[:notice] = "Successfully updated checkin status for #{@checkin.event.name}"
-            redirect_to event_path(@checkin.event)
+            redirect_to event_path(@event)
           else
             flash[:alert] = "Failed to update checkin status"
             redirect_to new_event_path

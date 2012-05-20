@@ -10,7 +10,7 @@ $(document).ready(function() {
       if(winners && winners > 0) {
         started = true;
         var rafflr = $("body").rafflr({
-          url: "<%= event_checkins_path(@event, :format => :json) %>",
+          url: "<%= event_checkins_path(@event, :format => :json, :rafflr => true) %>",
           winners: winners
         });
 

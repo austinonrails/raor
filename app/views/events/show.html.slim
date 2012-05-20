@@ -7,9 +7,13 @@ p
 p
   | Ends at: #{@event.end_datetime.strftime("%A %B %e, %Y %l:%M %p").squeeze(" ")}
 - if @event.is_checked_in(current_user)
-  | Checked In
+  | Checked In<br/>
 - elsif @event.active?
   = link_to "Check In", new_event_checkin_path(@event), :"data-role" => "button", :"data-inline" => "true"
+- if @event.is_in_rafflr(current_user)
+  | Entered in to Rafflr
+- elsif @event.active? && @event.is_checked_in(current_user)
+  = link_to "Enter in to Rafflr", event_checkin_path(@event, @event.checkins.find_by_user_id(current_user.id), :checkin => {:rafflr => true}), :method => :put, :target => "_self", :"data-role" => "button", :"data-inline" => "true"
 
 p
   = link_to "Checkin Carousel", event_carousel_path(@event), :method => :get, :"data-role" => "button", :"data-inline" => "true", :target => "_self"
