@@ -43,7 +43,7 @@ class Event < ActiveRecord::Base
 
   def is_in_rafflr user=nil
     user ||= current_user
-    Checkin.find_by_user_id(user).try{|user| user.rafflr if user}
+    checkins.find_by_user_id(user).try(:rafflr)
   end
 
   def start_date
