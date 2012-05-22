@@ -1,7 +1,8 @@
 h2
   = @event.name
 p
-  = @event.description
+  pre
+    = @event.description
 p
   | Starts at: #{@event.start_datetime.strftime("%A %B %e, %Y %l:%M %p").squeeze(" ")}
 p
