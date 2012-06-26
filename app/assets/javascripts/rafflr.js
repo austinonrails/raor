@@ -26,8 +26,10 @@
     },
     _start: function(data, textStatus, jqXHR) {
       var self = this;
+      var id = 0;
       self.data = $.map(data, function(value, indexOrKey) {
-        return {id: value.user_id, name: value.user.name};
+        id += 1;
+        return {id: id, name: value.user.name};
       });
 
       // Uncomment to add more names to the data
