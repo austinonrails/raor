@@ -1,34 +1,28 @@
-DOCTYPE html
-html
-  head
-    - if can?(:create, :Event) || can?(:create, :User)
-      = javascript_include_tag "application", 'admin'
-    - else
-      = javascript_include_tag "application"
-    = yield :javascript
-    = stylesheet_link_tag 'application'
-    = csrf_meta_tags
-    meta name="viewport" content="width=device-width, initial-scale=1"
-  body
-    div.page data-role="page"
-      .header data-role="header" data-position="fixed"
-        - back = back_path
-        = link_to "Back", back, :method => :get, :class => "back ui-btn-left", :"data-inline" => true, :"data-role" => "button" unless back.blank?
-        h1
-          = link_to "RAOR", root_path, :"data-inline" => true, :"data-role" => "button", :target => "_self"
-        = link_to "Logout", destroy_user_session_path, :method => :delete, :class => "ui-btn-right", :"data-inline" => true, :"data-role" => "button", :target => "_self"
-      - if notice
-        = link_to notice, "#", :id => "notice", :"data-role" => "button", :"data-icon" => "delete", :"data-iconpos" => "right"
-      - if alert
-        = link_to alert, "#", :id => "alert", :"data-role" => "button", :"data-icon" => "delete", :"data-iconpos" => "right"
-      = yield
-      - if can? :create, Event
-        .footer data-role="footer" data-position="fixed"
-          .navbar data-role="navbar"
-            ul
-              li
-                = link_to "Add Event", new_event_path
-              li
-                = link_to "List Users", admin_users_path
-              li
-                = link_to "Add User", new_admin_user_path
+doctype html
+== "<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->"
+== "<!--[if lt IE 7 ]> <html class=\"ie6\" lang=\"en\"> <![endif]-->"
+== "<!--[if IE 7 ]>    <html class=\"ie7\" lang=\"en\"> <![endif]-->"
+== "<!--[if IE 8 ]>    <html class=\"ie8\" lang=\"en\"> <![endif]-->"
+== "<!--[if IE 9 ]>    <html class=\"ie9\" lang=\"en\"> <![endif]-->"
+== "<!--[if (gt IE 9)|!(IE)]><!--> <html lang=\"en\"> <!--<![endif]-->"
+
+head
+  meta charset="utf-8"
+
+  / Uncomment to make IE8 render like IE7
+  / meta http-equiv="X-UA-Compatible" content="IE=7"
+
+  / Set the viewport width to device width for mobile
+  meta name="viewport" content="width=device-width, initial-scale=1.0"
+
+  title= content_for?(:title) ? yield(:title) : "Untitled"
+
+  = stylesheet_link_tag "application"
+  = javascript_include_tag "vendor/custom.modernizr"
+  = csrf_meta_tag
+
+body
+
+  == yield
+
+  = javascript_include_tag "application"

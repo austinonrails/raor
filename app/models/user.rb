@@ -13,7 +13,7 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :user_tokens
 
-  validates :name, :format => {:with => /^[A-Za-z0-9_\s]+$/}, :length => {:within => 2..254}, :presence => true
+  validates :name, :format => {:with => /\A[A-Za-z0-9_\s]+\z/}, :length => {:within => 2..254}, :presence => true
   validates :remember_employer, :inclusion => {:in => [true, false]}
 
   def self.find_for_twitter_oauth(omniauth, signed_in_resource=nil)

@@ -18,9 +18,9 @@ class Checkin < ActiveRecord::Base
   validates :employment, :inclusion => {:in => [true, false]}
   validates :rafflr, :inclusion => {:in => [true, false]}
   validates :remember_employer, :inclusion => {:in => [true, false, "1", "0", 1, 0]}
-  validates :employer, :format => {:with => /^[\x20-\x7E]*$/}, :length => {:within => 0..254}
+  validates :employer, :format => {:with => /\A[\x20-\x7E]*\z/}, :length => {:within => 0..254}
   validate :is_user
-  validates :shoutout, :format => {:with => /^[\x20-\x7E]*$/}, :length => {:within => 0..254}
+  validates :shoutout, :format => {:with => /\A[\x20-\x7E]*\z/}, :length => {:within => 0..254}
 
   def remember_employer
     @remember_employer ||= current_user.remember_employer

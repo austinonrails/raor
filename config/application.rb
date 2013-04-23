@@ -55,5 +55,7 @@ module Raor
       Devise::UnlocksController.layout "devise"
       Devise::PasswordsController.layout "devise"
     end
+
+    config.ember.variant = Rails.env.to_s.to_sym
   end
 end

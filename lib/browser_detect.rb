@@ -5,7 +5,7 @@ module BrowserDetect
 	def browser_is? query
 		query = query.to_s.strip.downcase
 		result = case query
-		when /^ie(\d+)$/
+		when /\Aie(\d+)\z/
 			ua.index("msie #{$1}") && !ua.index('opera') && !ua.index('webtv')
 		when 'ie'
 			ua.match(/msie \d/) && !ua.index('opera') && !ua.index('webtv')
@@ -17,7 +17,7 @@ module BrowserDetect
 			ua.match(/webkit|safari|chrome|iphone|ipad|ipod/)
 		when 'ios'
 			ua.match(/iphone|ipad|ipod/)
-		when /^robot(s?)$/
+		when /\Arobot(s?)\z/
 			ua.match(/googlebot|msnbot/) || browser_is?('yahoobot')
 		when 'mobile'
 			browser_is?('ios') || ua.match(/android|webos|mobile/)

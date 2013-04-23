@@ -8,8 +8,8 @@ class Event < ActiveRecord::Base
   attr_accessible :description, :end_date, :end_time, :name, :start_date, :start_time, :as => :default
   attr_accessible :created_at, :creator_id, :description, :end_date, :end_time, :id, :name, :start_date, :start_time, :updated_at, :as => :admin
 
-  validates :name, :format => {:with => /^[\x20-\x7E]+$/}, :length => {:within => 2..254}, :presence => true
-  validates :description, :format => {:with => /^[\x20-\x7E]*$/}, :length => {:within => 0..254}
+  validates :name, :format => {:with => /\A[\x20-\x7E]+\z/}, :length => {:within => 2..254}, :presence => true
+  validates :description, :format => {:with => /\A[\x20-\x7E]*\z/}, :length => {:within => 0..254}
   validates :start_datetime, :date => {:before => :end_datetime}
   validates :start_datetime, :date => {:after => Proc.new {Time.zone.now - 5.minutes}}, :on => :create
   validates :end_datetime, :date => {:after => :start_datetime}

@@ -1,24 +1,27 @@
 source 'http://rubygems.org'
 source "http://gems.github.com"
 
-gem 'rails', '3.2.0'
+ruby "2.0.0"
+gem 'rails', '4.0.0.beta1'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 #gem 'sqlite3'
 gem 'pg'
-gem 'devise'
+gem 'devise', git: 'git://github.com/plataformatec/devise.git', tag: 'rails4'
 gem 'omniauth'
 gem "omniauth-twitter"
 gem "omniauth-facebook"
 gem "omniauth-openid"
 gem 'omniauth-github'
 gem 'cancan'
-gem 'will_paginate'
+gem 'kaminari'
 gem 'date_validator'
 gem 'jquery-rails'
 gem 'slim-rails'
+gem 'protected_attributes'
+gem 'ember-rails'
 
 # Use unicorn as the web server
 gem 'unicorn'
@@ -26,15 +29,13 @@ gem 'unicorn'
 # Deploy with Capistrano
 gem 'capistrano'
 
-group :assets do
-  gem 'execjs'
-  gem 'sass-rails'
-  gem 'uglifier'
-end
+gem 'execjs'
+gem 'sass-rails', '~> 4.0.0.beta1'
+gem 'uglifier'
+gem 'zurb-foundation'
 
 group :development, :test do
-# To use debugger (ruby-debug for Ruby 1.8.7+, ruby-debug19 for Ruby 1.9.2+)
-#gem 'ruby-debug'
+  gem 'therubyracer'
   gem 'rspec-rails'
   gem 'jasmine'
   gem 'jasmine-headless-webkit'
