@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
     else
       name = omniauth.info.name
       name = omniauth.info.nickname if name.blank?
-      name = omniauth.extra.screen_name if name.blank?
+      name = omniauth.extra.raw_info.screen_name if name.blank?
       user = (User.find_by_email(omniauth.info.email) if omniauth.info.email) || User.create!(:name => name)
       if authentication
         authentication.user = user

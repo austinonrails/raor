@@ -56,6 +56,7 @@ module Raor
       Devise::PasswordsController.layout "devise"
     end
 
-    config.ember.variant = Rails.env.to_s.to_sym
+    #Use when ember-rails gem is used
+    #config.ember.variant = Rails.env.to_s.to_sym
   end
 end

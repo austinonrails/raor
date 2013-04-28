@@ -21,7 +21,6 @@ gem 'date_validator'
 gem 'jquery-rails'
 gem 'slim-rails'
 gem 'protected_attributes'
-gem 'ember-rails'
 
 # Use unicorn as the web server
 gem 'unicorn'
@@ -39,4 +38,7 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'jasmine'
   gem 'jasmine-headless-webkit'
+  gem 'factory_girl_rails'
+  gem 'shoulda-matchers'
+  #gem 'database_cleaner', git: 'git://github.com/bmabey/database_cleaner.git', tag: 'v1.0.0.RC1'
 end

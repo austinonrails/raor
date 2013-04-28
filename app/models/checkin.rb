@@ -8,11 +8,11 @@ class Checkin < ActiveRecord::Base
   attr_accessible :employ, :employer, :employment, :event_id, :rafflr, :remember_employer, :shoutout, :user_id, :as => :default
   attr_accessible :created_at, :employ, :employer, :employment, :event_id, :hidden, :rafflr, :remember_employer, :shoutout, :updated_at, :user_id, :as => :admin
 
-  scope :hidden, :conditions => ["checkins.hidden = ?", true]
-  scope :unhidden, :conditions => ["checkins.hidden = ?", false]
-  scope :employ, :conditions => ["checkins.employ = ?", true]
-  scope :employment, :conditions => ["checkins.employment = ?", true]
-  scope :rafflr, :conditions => ["checkins.rafflr = ?", true]
+  scope :hidden, -> { where(hidden: true) }
+  scope :unhidden, -> { where(hidden: false) }
+  scope :employ, -> { where(employ: true) }
+  scope :employment, -> { where(employment: true) }
+  scope :rafflr, -> { where(rafflr: true) }
 
   validates :employ, :inclusion => {:in => [true, false]}
   validates :employment, :inclusion => {:in => [true, false]}

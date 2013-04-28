@@ -1,16 +1,16 @@
 //= require jquery
 //= require jquery_ujs
 //= require foundation
-//= require jquery-ui
+//= //require jquery-ui
 //= require underscore
-//= require handlebars
-//= require ember
+//= require handlebars-1.0.0-rc.3
+//= require ember-1.0.0-rc.3
 //= require ember-data
-//= require raor
 //= require_self
+//= require raor
 
 $(document).foundation();
-Raor = Ember.Application.create();
+App = Ember.Application.create();
 
 //$(document).on("pageinit", function() {
 //  $.mobile.ajaxEnabled = true;

@@ -1,3 +1,3 @@
-Raor.Store = DS.Store.extend({
-  revision: 11
+App.Store = DS.Store.extend({
+  revision: 12
 });
