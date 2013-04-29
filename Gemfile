@@ -40,5 +40,6 @@ group :development, :test do
   gem 'jasmine-headless-webkit'
   gem 'factory_girl_rails'
   gem 'shoulda-matchers'
+  gem 'timecop'
   #gem 'database_cleaner', git: 'git://github.com/bmabey/database_cleaner.git', tag: 'v1.0.0.RC1'
 end

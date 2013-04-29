@@ -1,4 +1,5 @@
 require 'spec_helper'
+require "cancan/matchers"
 require 'omniauth/auth_hash'
 
 describe User do
@@ -65,6 +66,95 @@ describe User do
     it { should ensure_length_of(:name).is_at_most(254) }
     # Bug in shoulda matchers
     #it { should ensure_inclusion_of(:remember_employer).in_array([true, false]) }
+  end
+
+  describe "abilities" do
+    subject { ability }
+    let(:ability){ Ability.new(user) }
+    let(:user){ nil }
+    let(:another_user){ FactoryGirl.create(:user) }
+    let(:event) do
+      Timecop.freeze(2.hours.ago) do
+        FactoryGirl.create(:event)
+      end
+    end
+
+    context "when is an admin" do
+      let(:user){ FactoryGirl.create(:admin) }
+
+      it{ should be_able_to(:manage, FactoryGirl.build(:checkin)) }
+      it{ should be_able_to(:manage, FactoryGirl.build(:event)) }
+      it{ should be_able_to(:manage, FactoryGirl.build(:user)) }
+      it{ should be_able_to(:manage, FactoryGirl.build(:user_token)) }
+    end
+
+    context "when is a moderator" do
+      let(:user){ FactoryGirl.create(:moderator) }
+
+      it{ should be_able_to(:read, FactoryGirl.build(:event)) }
+      it{ should be_able_to(:manage, FactoryGirl.build(:event, creator: user)) }
+      it{ should_not be_able_to(:manage, FactoryGirl.build(:event)) }
+
+      it{ should be_able_to(:manage, user) }
+      it{ should_not be_able_to(:manage, another_user) }
+
+      it{ should be_able_to(:manage, FactoryGirl.build(:user_token, user: user)) }
+      it{ should_not be_able_to(:manage, FactoryGirl.build(:user_token, user: another_user)) }
+
+      it{ should be_able_to(:read, FactoryGirl.build(:checkin)) }
+      it{ should be_able_to(:create, FactoryGirl.build(:checkin, event: event, current_user: user, user: user)) }
+      it{ should_not be_able_to(:create, FactoryGirl.build(:checkin, event: event, current_user: user, user: another_user)) }
+      it{ should be_able_to(:update, FactoryGirl.build(:checkin, event: event, current_user: user, user: user)) }
+      it{ should_not be_able_to(:update, FactoryGirl.build(:checkin, event: event, current_user: another_user, user: another_user)) }
+      it{ should be_able_to(:destroy, FactoryGirl.build(:checkin, event: event, current_user: user, user: user)) }
+      it{ should_not be_able_to(:destroy, FactoryGirl.build(:checkin, event: event, current_user: another_user, user: another_user)) }
+    end
+
+    context "when is a user" do
+      let(:user){ FactoryGirl.create(:user) }
+
+      it{ should be_able_to(:read, FactoryGirl.build(:event)) }
+      it{ should_not be_able_to(:manage, FactoryGirl.build(:event, creator: user)) }
+      it{ should_not be_able_to(:manage, FactoryGirl.build(:event)) }
+
+      it{ should be_able_to(:manage, user) }
+      it{ should_not be_able_to(:manage, another_user) }
+
+      it{ should be_able_to(:manage, FactoryGirl.build(:user_token, user: user)) }
+      it{ should_not be_able_to(:manage, FactoryGirl.build(:user_token, user: another_user)) }
+
+      it{ should be_able_to(:read, FactoryGirl.build(:checkin)) }
+      it{ should be_able_to(:create, FactoryGirl.build(:checkin, event: event, current_user: user, user: user)) }
+      it{ should_not be_able_to(:create, FactoryGirl.build(:checkin, event: event, current_user: user, user: another_user)) }
+      it{ should be_able_to(:update, FactoryGirl.build(:checkin, event: event, current_user: user, user: user)) }
+      it{ should_not be_able_to(:update, FactoryGirl.build(:checkin, event: event, current_user: another_user, user: another_user)) }
+      it{ should be_able_to(:destroy, FactoryGirl.build(:checkin, event: event, current_user: user, user: user)) }
+      it{ should_not be_able_to(:destroy, FactoryGirl.build(:checkin, event: event, current_user: another_user, user: another_user)) }
+    end
+
+    context "when is a banned user" do
+      let(:user){ FactoryGirl.create(:banned) }
+
+      it{ should_not be_able_to(:read, FactoryGirl.build(:checkin)) }
+      it{ should_not be_able_to(:create, FactoryGirl.build(:checkin)) }
+      it{ should_not be_able_to(:update, FactoryGirl.build(:checkin)) }
+      it{ should_not be_able_to(:destroy, FactoryGirl.build(:checkin)) }
+
+      it{ should_not be_able_to(:read, FactoryGirl.build(:event)) }
+      it{ should_not be_able_to(:create, FactoryGirl.build(:event)) }
+      it{ should_not be_able_to(:update, FactoryGirl.build(:event)) }
+      it{ should_not be_able_to(:destroy, FactoryGirl.build(:event)) }
+
+      it{ should_not be_able_to(:read, FactoryGirl.build(:user)) }
+      it{ should_not be_able_to(:create, FactoryGirl.build(:user)) }
+      it{ should_not be_able_to(:update, FactoryGirl.build(:user)) }
+      it{ should_not be_able_to(:destroy, FactoryGirl.build(:user)) }
+
+      it{ should_not be_able_to(:read, FactoryGirl.build(:user_token)) }
+      it{ should_not be_able_to(:create, FactoryGirl.build(:user_token)) }
+      it{ should_not be_able_to(:update, FactoryGirl.build(:user_token)) }
+      it{ should_not be_able_to(:destroy, FactoryGirl.build(:user_token)) }
+    end
   end
 
   context "devise" do
