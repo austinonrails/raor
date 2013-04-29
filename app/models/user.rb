@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.find_for_open_id(omniauth, signed_in_resource=nil)
+  def self.find_for_open_id_oauth(omniauth, signed_in_resource=nil)
     authentication = UserToken.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])
     if authentication && authentication.user
       authentication.user

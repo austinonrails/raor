@@ -105,77 +105,79 @@ describe User do
   end
 
   context "oauth" do
-    context "twitter" do
-      before(:each) do
-        @name = 'User'
-        @provider = 'twitter'
-        @uid = '1'
-        @email = 'user@example.com'
+    ['twitter', 'facebook', 'github', 'open_id'].each do |provider|
+      context provider do
+        before(:each) do
+          @name = 'User'
+          @provider = provider
+          @uid = '1'
+          @email = 'user@example.com'
 
-        @omniauth = OmniAuth::AuthHash.new({
-          provider: @provider,
-          uid: @uid,
-          info: OmniAuth::AuthHash::InfoHash.new({
-            email: @email,
-            nickname: @name,
-            name: @name,
-            location: 'Austin, TX',
-            image: nil,
-            description: nil,
-            urls: OmniAuth::AuthHash.new({
-              Website: nil,
-              Twitter: nil
+          @omniauth = OmniAuth::AuthHash.new({
+            provider: @provider,
+            uid: @uid,
+            info: OmniAuth::AuthHash::InfoHash.new({
+              email: @email,
+              nickname: @name,
+              name: @name,
+              location: 'Austin, TX',
+              image: nil,
+              description: nil,
+              urls: OmniAuth::AuthHash.new({
+                Website: nil,
+                Twitter: nil
+              })
+            }),
+            extra: OmniAuth::AuthHash.new({
+              screen_name: @name
             })
-          }),
-          extra: OmniAuth::AuthHash.new({
-            screen_name: @name
           })
-        })
-      end
-
-      context "when creating user and token" do
-        subject { lambda { described_class.find_for_twitter_oauth(@omniauth) } }
-
-        it { should change(described_class, :count).from(0).to(1) }
-        it { should change(UserToken, :count).from(0).to(1) }
-
-        it "should create the correct UserToken" do
-          subject.call.should == UserToken.where(provider: @provider, uid: @uid, user_id: subject.call.id).first.user
         end
 
-        it "should create the correct #{described_class}" do
-          subject.call.should == described_class.where(name: @name).first
-        end
-      end
+        context "when creating user and token" do
+          subject { lambda { described_class.send("find_for_#{provider}_oauth".to_sym, @omniauth) } }
 
-      context "when creating just a user" do
-        before(:each) do
-          UserToken.create!(provider: @provider, uid: @uid)
-        end
+          it { should change(described_class, :count).from(0).to(1) }
+          it { should change(UserToken, :count).from(0).to(1) }
 
-        subject { lambda { described_class.find_for_twitter_oauth(@omniauth) } }
+          it "should create the correct UserToken" do
+            subject.call.should == UserToken.where(provider: @provider, uid: @uid, user_id: subject.call.id).first.user
+          end
 
-        it { should change(described_class, :count).from(0).to(1) }
-        it { should_not change(UserToken, :count) }
-
-        it "should create the correct #{described_class}" do
-          subject.call.should == described_class.where(name: @name).first
-        end
-      end
-
-      context "when user and token exist" do
-        before(:each) do
-          @user = FactoryGirl.create(:user, name: @name, email: @email)
-          FactoryGirl.create(:user_token, provider: @provider, uid: @uid, user: @user)
+          it "should create the correct #{described_class}" do
+            subject.call.should == described_class.where(name: @name).first
+          end
         end
 
-        subject { lambda { described_class.find_for_twitter_oauth(@omniauth) } }
+        context "when creating just a user" do
+          before(:each) do
+            UserToken.create!(provider: @provider, uid: @uid)
+          end
 
-        it { should_not change(described_class, :count) }
-        it { should_not change(UserToken, :count) }
+          subject { lambda { described_class.send("find_for_#{provider}_oauth".to_sym, @omniauth) } }
 
-        it "should find user" do
-          subject.call.should == @user
+          it { should change(described_class, :count).from(0).to(1) }
+          it { should_not change(UserToken, :count) }
+
+          it "should create the correct #{described_class}" do
+            subject.call.should == described_class.where(name: @name).first
+          end
+        end
+
+        context "when user and token exist" do
+          before(:each) do
+            @user = FactoryGirl.create(:user, name: @name, email: @email)
+            FactoryGirl.create(:user_token, provider: @provider, uid: @uid, user: @user)
+          end
+
+          subject { lambda { described_class.send("find_for_#{provider}_oauth".to_sym, @omniauth) } }
+
+          it { should_not change(described_class, :count) }
+          it { should_not change(UserToken, :count) }
+
+          it "should find user" do
+            subject.call.should == @user
+          end
         end
       end
     end

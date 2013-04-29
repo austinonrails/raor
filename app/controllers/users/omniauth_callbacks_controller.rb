@@ -45,7 +45,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def open_id
-    @user = User.find_for_open_id(env["omniauth.auth"], current_user)
+    @user = User.find_for_open_id_oauth(env["omniauth.auth"], current_user)
     if @user && @user.persisted?
       flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => "OpenID"
       sign_in_and_redirect @user, :event => :authentication
@@ -62,7 +62,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def google
     # You need to implement the method below in your model
-    @user = User.find_for_open_id(env["omniauth.auth"], current_user)
+    @user = User.find_for_open_id_oauth(env["omniauth.auth"], current_user)
     if @user && @user.persisted?
       flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => "Google"
       sign_in_and_redirect @user, :event => :authentication
