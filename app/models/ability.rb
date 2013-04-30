@@ -6,10 +6,10 @@ class Ability
     if user.is? :admin
       can :manage, :all
     elsif user.is? :moderator
+      can :read, [Checkin, Event]
       can :manage, UserToken, :user_id => user.id
       can :manage, Event, :creator_id => user.id
       can :manage, User, :id => user.id
-      can :read, Checkin
       can :create, Checkin, :user_id => user.id
       can :update, Checkin, :user_id => user.id
       can :destroy, Checkin, :user_id => user.id

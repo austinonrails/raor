@@ -11,7 +11,7 @@ class Event < ActiveRecord::Base
   validates :name, :format => {:with => /\A[\x20-\x7E]+\z/}, :length => {:within => 2..254}, :presence => true
   validates :description, :format => {:with => /\A[\x20-\x7E]*\z/}, :length => {:within => 0..254}
   validates :start_datetime, :date => {:before => :end_datetime}
-  validates :start_datetime, :date => {:after => Proc.new {Time.zone.now - 5.minutes}}, :on => :create
+  validates :start_datetime, :date => {:after => Proc.new {5.minutes.ago}}, :on => :create
   validates :end_datetime, :date => {:after => :start_datetime}
 
   def self.active
@@ -32,8 +32,8 @@ class Event < ActiveRecord::Base
   end
 
   def current_user=(user)
+    self.creator_id = user.id unless self.creator_id
     @user = user
-    self.creator_id = user,id
   end
 
   def is_checked_in user=nil
@@ -51,7 +51,7 @@ class Event < ActiveRecord::Base
   end
 
   def start_date=(value)
-    self.start_datetime = Time.zone.parse("#{value} #{self.start_datetime.strftime('%I:%M %p') if self.start_datetime}")
+    self.start_datetime = Time.zone.parse("#{value} #{self.start_datetime.strftime('%H:%M:00') if self.start_datetime}")
   end
 
   def start_time
@@ -67,7 +67,7 @@ class Event < ActiveRecord::Base
   end
 
   def end_date=(value)
-    self.end_datetime = Time.zone.parse("#{value} #{self.end_datetime.strftime('%I:%M %p') if self.end_datetime}")
+    self.end_datetime = Time.zone.parse("#{value} #{self.end_datetime.strftime('%H:%M:00') if self.end_datetime}")
   end
 
   def end_time
