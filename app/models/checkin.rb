@@ -23,7 +23,7 @@ class Checkin < ActiveRecord::Base
   validates :shoutout, :format => {:with => /\A[\x20-\x7E]*\z/}, :length => {:within => 0..254}
 
   def remember_employer
-    @remember_employer ||= current_user.remember_employer
+    @remember_employer ||= (current_user ? current_user.remember_employer : false)
   end
 
   private

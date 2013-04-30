@@ -9,6 +9,7 @@ FactoryGirl.define do
 
     association :event
     association :user
-    association :current_user, factory: :user
+
+    current_user { user }
   end
 end
